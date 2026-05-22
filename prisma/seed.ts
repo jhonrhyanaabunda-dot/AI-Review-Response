@@ -238,6 +238,18 @@ async function main() {
   const rand = mulberry32(42);
   let inserted = 0;
 
+  // Make the bulk-review loop idempotent: if this org already has reviews,
+  // skip. Re-running the seed shouldn't double the inbox.
+  const existingReviewCount = await prisma.review.count({
+    where: { organizationId: org.id },
+  });
+  if (existingReviewCount > 0) {
+    console.log(
+      `Seed complete. (Skipped bulk review insertion — org already has ${existingReviewCount} reviews.)`,
+    );
+    return;
+  }
+
   for (const dealership of dealerships) {
     const sources = await prisma.reviewSource.findMany({
       where: { location: { dealershipId: dealership.id } },
