@@ -1,7 +1,7 @@
 "use client";
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,8 +11,12 @@ export function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [pending, setPending] = useState(false);
-  const router = useRouter();
-  const from = useSearchParams().get("from") ?? "/";
+  // After sign-in we send users straight to /dashboard. If they arrived
+  // here from a protected route, honour that `from` instead. Never bounce
+  // back to /login itself (would create a loop).
+  const sp = useSearchParams();
+  const requested = sp.get("from");
+  const target = requested && !requested.startsWith("/login") ? requested : "/dashboard";
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,13 +26,17 @@ export function LoginForm() {
       password,
       redirect: false,
     });
-    setPending(false);
     if (res?.error) {
+      setPending(false);
       toast.error("Invalid credentials");
       return;
     }
-    router.push(from);
-    router.refresh();
+    // Hard navigation — guarantees the freshly set auth cookie is
+    // included on the next server-rendered page request. `router.push`
+    // would soft-nav before the cookie reaches the next RSC fetch and
+    // the dashboard's `auth()` call would return null, bouncing back
+    // to the landing page.
+    window.location.assign(target);
   };
 
   return (
