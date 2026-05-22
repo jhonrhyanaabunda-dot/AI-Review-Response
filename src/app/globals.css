@@ -1,0 +1,125 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * A3 Brands design tokens — see DESIGN.md.
+ * Numbers below are HSL components (no commas, no `hsl()` wrapper) so
+ * `hsl(var(--primary))` works.
+ *
+ *   #1DB954  emerald → 142 71% 41%
+ *   #2C3038  charcoal → 216 12% 20%
+ *   #0B0D0F  navy → 210 14% 5%
+ *   #F8F9FA  surface → 210 17% 98%
+ *   #E5E7EB  pale border → 220 13% 91%
+ *   #5A6170  stone → 217 11% 40%
+ *   #8A919C  mute → 215 9% 58%
+ */
+
+@layer base {
+  :root {
+    /* surfaces */
+    --background: 0 0% 100%;                /* white */
+    --foreground: 216 12% 20%;              /* charcoal */
+    --card: 0 0% 100%;                      /* white */
+    --card-foreground: 216 12% 20%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 216 12% 20%;
+
+    /* A3 emerald = primary (CTAs, badges, success) */
+    --primary: 142 71% 41%;                 /* #1DB954 */
+    --primary-foreground: 216 12% 20%;      /* charcoal text on emerald per DESIGN §4 */
+
+    /* secondary = soft surface tone */
+    --secondary: 210 17% 98%;               /* #F8F9FA */
+    --secondary-foreground: 216 12% 20%;
+
+    /* muted = subtle backgrounds + text */
+    --muted: 210 17% 98%;
+    --muted-foreground: 217 11% 40%;        /* stone */
+
+    /* accent mirrors secondary for now */
+    --accent: 210 17% 96%;
+    --accent-foreground: 216 12% 20%;
+
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 41%;                 /* A3 emerald doubles as success */
+    --success-foreground: 0 0% 100%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 38 92% 12%;
+
+    --border: 220 13% 91%;                  /* pale */
+    --input: 220 13% 91%;
+    --ring: 142 71% 41%;                    /* emerald focus ring */
+
+    /* DESIGN.md §5: 16px radius on primary cards */
+    --radius: 16px;
+  }
+
+  .dark {
+    /* surfaces flip to navy / charcoal */
+    --background: 210 14% 5%;               /* #0B0D0F */
+    --foreground: 0 0% 100%;
+    --card: 216 12% 13%;
+    --card-foreground: 0 0% 100%;
+    --popover: 210 14% 5%;
+    --popover-foreground: 0 0% 100%;
+
+    --primary: 142 71% 41%;
+    --primary-foreground: 216 12% 12%;
+
+    --secondary: 216 12% 18%;
+    --secondary-foreground: 0 0% 100%;
+
+    --muted: 216 12% 18%;
+    --muted-foreground: 215 9% 70%;
+
+    --accent: 216 12% 18%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 70% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --success: 142 71% 45%;
+    --success-foreground: 0 0% 100%;
+
+    --warning: 48 96% 53%;
+    --warning-foreground: 38 92% 12%;
+
+    --border: 216 12% 22%;
+    --input: 216 12% 22%;
+    --ring: 142 71% 45%;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-feature-settings: "rlig" 1, "calt" 1, "ss01" 1;
+    /* DESIGN.md §3: 12px Sora body with 1.4x line-height */
+    font-size: 14px;
+    line-height: 1.5;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    /* DESIGN.md: 900-weight headings, 700 for H3 — set per-element where used */
+    font-family: var(--font-sora), Sora, sans-serif;
+    letter-spacing: -0.01em;
+  }
+}
+
+/* Subtle scrollbars */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-muted-foreground/20 rounded-full;
+}
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-muted-foreground/40;
+}

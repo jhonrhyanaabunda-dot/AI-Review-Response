@@ -1,0 +1,519 @@
+// AI Review Response — multi-tenant data model.
+// Tenant root is Organization (agency). Every tenant-scoped row carries organizationId
+// so application-level guards and Postgres RLS (optional) can enforce isolation.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider          = "postgresql"
+  url               = env("DATABASE_URL")
+  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+}
+
+// ─────────────────────────────── Enums ───────────────────────────────
+
+enum Role {
+  SUPER_ADMIN
+  AGENCY_ADMIN
+  GENERAL_MANAGER
+  MARKETING_DIRECTOR
+  RESPONSE_AGENT
+}
+
+enum ReviewPlatform {
+  GOOGLE
+  YELP
+  DEALERRATER
+  CARS_DOT_COM
+  FACEBOOK
+  BBB
+}
+
+enum Sentiment {
+  POSITIVE
+  NEUTRAL
+  NEGATIVE
+  ANGRY
+  LEGAL_RISK
+}
+
+enum ResponseStatus {
+  DRAFT
+  PENDING_APPROVAL
+  APPROVED
+  REJECTED
+  PUBLISHED
+  FAILED
+  ESCALATED
+}
+
+enum ReviewStatus {
+  NEW
+  IN_PROGRESS
+  RESPONDED
+  IGNORED
+  ESCALATED
+}
+
+enum TonePreset {
+  LUXURY
+  FRIENDLY
+  CORPORATE
+  OEM_COMPLIANT
+  CUSTOM
+}
+
+enum SyncJobStatus {
+  QUEUED
+  RUNNING
+  SUCCEEDED
+  FAILED
+  CANCELED
+}
+
+enum EscalationSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+enum ActivityKind {
+  REVIEW_INGESTED
+  RESPONSE_GENERATED
+  RESPONSE_APPROVED
+  RESPONSE_REJECTED
+  RESPONSE_EDITED
+  RESPONSE_PUBLISHED
+  RESPONSE_FAILED
+  ESCALATED
+  MEMBER_INVITED
+  MEMBER_REMOVED
+  DEALERSHIP_CREATED
+  DEALERSHIP_UPDATED
+  LOCATION_CREATED
+  TOKEN_ROTATED
+  SETTINGS_UPDATED
+  LOGIN
+}
+
+// ─────────────────────────── Identity / Tenant ───────────────────────────
+
+model Organization {
+  id              String   @id @default(cuid())
+  slug            String   @unique
+  name            String
+  logoUrl         String?
+  billingEmail    String?
+  // Plan / feature flag bag — extend in code.
+  plan            String   @default("starter")
+  featureFlags    Json     @default("{}")
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  memberships     Membership[]
+  dealerships     Dealership[]
+  reviews         Review[]
+  responses       AiResponse[]
+  approvals       Approval[]
+  activityLogs    ActivityLog[]
+  apiTokens       ApiToken[]
+  syncJobs        SyncJob[]
+  escalations     Escalation[]
+  invitations     Invitation[]
+
+  @@index([slug])
+}
+
+model User {
+  id              String   @id @default(cuid())
+  email           String   @unique
+  emailVerified   DateTime?
+  name            String?
+  image           String?
+  passwordHash    String?  // argon2id; null for OAuth-only users
+  lastLoginAt     DateTime?
+  isSystem        Boolean  @default(false)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  memberships     Membership[]
+  accounts        Account[]
+  sessions        Session[]
+  approvalsActed  Approval[]   @relation("ApprovalActor")
+  responsesEdited AiResponse[] @relation("ResponseEditor")
+  activityLogs    ActivityLog[]
+  assignedReviews Review[]     @relation("ReviewAssignee")
+}
+
+// NextAuth-compatible models.
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// Membership = (User × Organization × Role). Optional dealership scope
+// pins a member to a single dealership (e.g. a GM for one rooftop).
+model Membership {
+  id             String   @id @default(cuid())
+  organizationId String
+  userId         String
+  role           Role
+  dealershipId   String?  // null = org-wide
+  invitedById    String?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  dealership   Dealership?  @relation(fields: [dealershipId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, userId, dealershipId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
+model Invitation {
+  id             String   @id @default(cuid())
+  organizationId String
+  email          String
+  role           Role
+  dealershipId   String?
+  tokenHash      String   @unique
+  expiresAt      DateTime
+  acceptedAt     DateTime?
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dealership   Dealership?  @relation(fields: [dealershipId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, email])
+}
+
+// ─────────────────────────── Dealership / Locations ───────────────────────────
+
+model Dealership {
+  id               String   @id @default(cuid())
+  organizationId   String
+  name             String
+  slug             String
+  brand            String?   // OEM e.g. "Toyota", "BMW"
+  websiteUrl       String?
+  primaryEmail     String?
+  primaryPhone     String?
+  timezone         String   @default("America/New_York")
+  // AI behavior
+  tonePreset       TonePreset @default(FRIENDLY)
+  customTone       String?    // free-form override when tonePreset = CUSTOM
+  aiInstructions   String?    @db.Text
+  signOff          String?    // e.g. "— The Smith Toyota Team"
+  // Escalation
+  escalationKeywords String[] @default([])
+  escalationEmails   String[] @default([])
+  autoPublishThreshold Int    @default(4) // auto-publish if confidence >= and rating >= this
+  requireApproval    Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  locations    Location[]
+  reviews      Review[]
+  memberships  Membership[]
+  invitations  Invitation[]
+  apiTokens    ApiToken[]
+  syncJobs     SyncJob[]
+  escalations  Escalation[]
+
+  @@unique([organizationId, slug])
+  @@index([organizationId])
+}
+
+// A Location is a physical rooftop. One Dealership can own several.
+model Location {
+  id             String   @id @default(cuid())
+  dealershipId   String
+  name           String
+  address1       String?
+  address2       String?
+  city           String?
+  region         String?
+  postalCode     String?
+  country        String   @default("US")
+  latitude       Float?
+  longitude      Float?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  dealership   Dealership      @relation(fields: [dealershipId], references: [id], onDelete: Cascade)
+  sources      ReviewSource[]
+  reviews      Review[]
+
+  @@index([dealershipId])
+}
+
+// ─────────────────────────── Review pipeline ───────────────────────────
+
+// One row per (platform, location). Holds platform-specific external IDs +
+// credentials reference. We store encrypted access/refresh tokens against
+// an ApiToken row to avoid duplicating secrets.
+model ReviewSource {
+  id              String         @id @default(cuid())
+  locationId      String
+  platform        ReviewPlatform
+  externalId      String         // platform's place/business ID
+  displayName     String?
+  apiTokenId      String?
+  lastSyncedAt    DateTime?
+  lastSyncCursor  String?        // pagination cursor / since-id
+  isActive        Boolean        @default(true)
+  config          Json           @default("{}") // arbitrary per-source config
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  location  Location  @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  apiToken  ApiToken? @relation(fields: [apiTokenId], references: [id], onDelete: SetNull)
+  reviews   Review[]
+  syncJobs  SyncJob[]
+
+  @@unique([locationId, platform, externalId])
+  @@index([platform])
+}
+
+model Review {
+  id              String         @id @default(cuid())
+  organizationId  String
+  dealershipId    String
+  locationId      String?
+  sourceId        String
+  platform        ReviewPlatform
+  externalId      String         // platform review id, dedupe key
+  externalUrl     String?
+  authorName      String?
+  authorAvatarUrl String?
+  rating          Int            // 1..5
+  title           String?
+  body            String         @db.Text
+  language        String?        // ISO 639-1
+  postedAt        DateTime
+  raw             Json           // raw payload from provider
+  status          ReviewStatus   @default(NEW)
+  assigneeId      String?
+  // denormalized sentiment for fast filtering — also tracked on AiResponse
+  sentiment       Sentiment?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dealership   Dealership   @relation(fields: [dealershipId], references: [id], onDelete: Cascade)
+  location     Location?    @relation(fields: [locationId], references: [id], onDelete: SetNull)
+  source       ReviewSource @relation(fields: [sourceId], references: [id], onDelete: Cascade)
+  assignee     User?        @relation("ReviewAssignee", fields: [assigneeId], references: [id], onDelete: SetNull)
+
+  responses    AiResponse[]
+  escalations  Escalation[]
+  activityLogs ActivityLog[]
+  notes        ReviewNote[]
+
+  @@unique([platform, externalId])
+  @@index([organizationId, status])
+  @@index([dealershipId, postedAt])
+  @@index([rating])
+  @@index([sentiment])
+}
+
+model ReviewNote {
+  id          String   @id @default(cuid())
+  reviewId    String
+  authorId    String
+  body        String   @db.Text
+  createdAt   DateTime @default(now())
+
+  review Review @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([reviewId])
+}
+
+// AI-generated response, one or many per review (history of regenerations).
+// The currently-active draft is the most recent non-superseded row.
+model AiResponse {
+  id               String         @id @default(cuid())
+  organizationId   String
+  reviewId         String
+  status           ResponseStatus @default(DRAFT)
+  // generated content + edits
+  draftBody        String         @db.Text
+  finalBody        String?        @db.Text   // after human edit
+  // signals
+  sentiment        Sentiment?
+  confidence       Float          @default(0) // 0..1
+  legalRisk        Boolean        @default(false)
+  containsPii      Boolean        @default(false)
+  flaggedReasons   String[]       @default([])
+  // model meta
+  model            String
+  promptVersion    String?
+  tokensIn         Int?
+  tokensOut        Int?
+  generationCostUsd Decimal?      @db.Decimal(10, 6)
+  // workflow
+  editedById       String?
+  publishedAt      DateTime?
+  publishError     String?        @db.Text
+  publishAttempts  Int            @default(0)
+  supersededAt     DateTime?      // set when a regeneration occurs
+  createdAt        DateTime       @default(now())
+  updatedAt        DateTime       @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  review       Review       @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+  editedBy     User?        @relation("ResponseEditor", fields: [editedById], references: [id], onDelete: SetNull)
+
+  approvals    Approval[]
+
+  @@index([reviewId])
+  @@index([organizationId, status])
+  @@index([status, createdAt])
+}
+
+model Approval {
+  id           String         @id @default(cuid())
+  organizationId String
+  responseId   String
+  actorId      String
+  decision     ResponseStatus // APPROVED | REJECTED
+  comment      String?        @db.Text
+  createdAt    DateTime       @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  response     AiResponse   @relation(fields: [responseId], references: [id], onDelete: Cascade)
+  actor        User         @relation("ApprovalActor", fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([responseId])
+  @@index([organizationId])
+}
+
+model Escalation {
+  id             String             @id @default(cuid())
+  organizationId String
+  dealershipId   String
+  reviewId       String
+  severity       EscalationSeverity @default(MEDIUM)
+  reason         String             @db.Text
+  matchedKeywords String[]          @default([])
+  resolvedAt     DateTime?
+  resolvedById   String?
+  resolutionNote String?            @db.Text
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dealership   Dealership   @relation(fields: [dealershipId], references: [id], onDelete: Cascade)
+  review       Review       @relation(fields: [reviewId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, resolvedAt])
+  @@index([reviewId])
+}
+
+// ─────────────────────────── Infra / Ops ───────────────────────────
+
+// Encrypted credential blob. Used for OAuth refresh tokens, API keys, etc.
+// `cipherText` is base64(IV || authTag || ciphertext), encrypted with the
+// app's ENCRYPTION_KEY using AES-256-GCM. See src/lib/crypto.
+model ApiToken {
+  id             String         @id @default(cuid())
+  organizationId String
+  dealershipId   String?
+  platform       ReviewPlatform
+  label          String?
+  cipherText     String         @db.Text
+  scope          String?
+  expiresAt      DateTime?
+  rotatedAt      DateTime?
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dealership   Dealership?    @relation(fields: [dealershipId], references: [id], onDelete: SetNull)
+  sources      ReviewSource[]
+
+  @@index([organizationId, platform])
+}
+
+model SyncJob {
+  id             String        @id @default(cuid())
+  organizationId String
+  dealershipId   String?
+  sourceId       String?
+  platform       ReviewPlatform
+  kind           String         // "poll" | "backfill" | "publish" | "webhook"
+  status         SyncJobStatus  @default(QUEUED)
+  startedAt      DateTime?
+  finishedAt     DateTime?
+  attempts       Int            @default(0)
+  itemsFetched   Int            @default(0)
+  itemsNew       Int            @default(0)
+  error          String?        @db.Text
+  payload        Json?          // arbitrary input parameters
+  createdAt      DateTime       @default(now())
+  updatedAt      DateTime       @updatedAt
+
+  organization Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  dealership   Dealership?   @relation(fields: [dealershipId], references: [id], onDelete: SetNull)
+  source       ReviewSource? @relation(fields: [sourceId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status])
+  @@index([platform, createdAt])
+}
+
+model ActivityLog {
+  id             String       @id @default(cuid())
+  organizationId String
+  actorId        String?
+  reviewId       String?
+  kind           ActivityKind
+  message        String?      @db.Text
+  metadata       Json         @default("{}")
+  ip             String?
+  userAgent      String?
+  createdAt      DateTime     @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  actor        User?        @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  review       Review?      @relation(fields: [reviewId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, createdAt])
+  @@index([reviewId])
+  @@index([kind])
+}
