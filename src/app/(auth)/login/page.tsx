@@ -2,6 +2,11 @@ import Link from "next/link";
 import { Sparkles } from "lucide-react";
 import { LoginForm } from "./login-form";
 
+// useSearchParams() inside LoginForm requires the page to opt out of
+// static prerendering — otherwise Next 15 errors at build time asking
+// for a Suspense boundary. Login is inherently dynamic anyway.
+export const dynamic = "force-dynamic";
+
 export default function LoginPage() {
   return (
     <div className="grid min-h-screen md:grid-cols-2">

@@ -72,7 +72,8 @@ export const authConfig: NextAuthConfig = {
     },
     async session({ session, token }) {
       if (token.uid) session.user.id = token.uid as string;
-      session.memberships = (token.memberships as Session["memberships"]) ?? [];
+      session.memberships =
+        (token.memberships as import("next-auth").Session["memberships"]) ?? [];
       session.activeOrgId = (token.activeOrgId as string | undefined) ?? null;
       return session;
     },
@@ -84,18 +85,13 @@ export const authConfig: NextAuthConfig = {
   },
 };
 
+// NextAuth v5 (beta) consolidates JWT into the main module; the
+// `next-auth/jwt` subpath isn't a separate augmentation target anymore.
+// We extend Session here and rely on a Record-typed `token` in callbacks.
 declare module "next-auth" {
   interface Session {
     user: { id: string; email?: string | null; name?: string | null; image?: string | null };
     memberships: Array<{ organizationId: string; role: import("@prisma/client").Role; dealershipId: string | null }>;
     activeOrgId: string | null;
-  }
-}
-
-declare module "next-auth/jwt" {
-  interface JWT {
-    uid?: string;
-    activeOrgId?: string | null;
-    memberships?: Array<{ organizationId: string; role: import("@prisma/client").Role; dealershipId: string | null }>;
   }
 }

@@ -10,11 +10,17 @@ declare global {
 const url = process.env.REDIS_URL ?? "redis://localhost:6379";
 
 function build() {
-  return new Redis(url, {
+  // lazyConnect so importing this module during a Next.js prerender
+  // doesn't open a TCP connection at build time. The real connection is
+  // opened on first command. We silently absorb the connection-error
+  // event so it doesn't crash the build when Redis is unreachable.
+  const client = new Redis(url, {
     maxRetriesPerRequest: null,
-    enableReadyCheck: true,
-    lazyConnect: false,
+    enableReadyCheck: false,
+    lazyConnect: true,
   });
+  client.on("error", () => {});
+  return client;
 }
 
 export const redis = global.__redis ?? build();
