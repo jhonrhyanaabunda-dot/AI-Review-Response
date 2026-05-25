@@ -7,7 +7,7 @@ import type { PublishResponseJob } from "../queues";
 
 /**
  * Publish-only worker. Hydrates just enough state for publishNode and
- * skips the rest of the agent graph — re-running sentiment/respond after
+ * skips the rest of the agent graph - re-running sentiment/respond after
  * a human approval would regenerate the body and supersede the approved
  * draft, which is exactly what we don't want.
  */

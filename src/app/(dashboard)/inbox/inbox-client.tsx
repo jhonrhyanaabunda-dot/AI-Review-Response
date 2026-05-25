@@ -133,7 +133,7 @@ export function InboxClient({
           </span>
           <h2 className="mt-1 text-2xl font-black tracking-tight md:text-display-3">Inbox</h2>
           <p className="mt-1 text-sm text-muted-foreground">
-            {items.length} waiting for GM approval —{" "}
+            {items.length} waiting for GM approval -{" "}
             <span className="font-semibold text-success">{counts.high} high</span> ·{" "}
             <span className="font-semibold text-warning">{counts.mid} medium</span> ·{" "}
             <span className="font-semibold text-destructive">{counts.low} low</span> confidence

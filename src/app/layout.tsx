@@ -15,7 +15,7 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "A3 Brands — AI Review Response",
+  title: "A3 Brands - AI Review Response",
   description:
     "A3 Brands AI Review Response: auto-pull reviews from Google, Yelp, Cars.com, DealerRater, Facebook, and BBB. AI drafts the reply. GM approves with one click. Published back automatically.",
 };

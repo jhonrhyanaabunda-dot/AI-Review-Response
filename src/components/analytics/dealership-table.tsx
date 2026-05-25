@@ -34,8 +34,8 @@ export function DealershipTable({ rows }: { rows: Row[] }) {
               )}
               {rows.map((r, i) => (
                 <tr key={r.dealership?.id ?? i} className="border-t">
-                  <td className="px-4 py-2 font-medium">{r.dealership?.name ?? "—"}</td>
-                  <td className="px-4 py-2 text-muted-foreground">{r.dealership?.brand ?? "—"}</td>
+                  <td className="px-4 py-2 font-medium">{r.dealership?.name ?? "-"}</td>
+                  <td className="px-4 py-2 text-muted-foreground">{r.dealership?.brand ?? "-"}</td>
                   <td className="px-4 py-2">{r.reviews}</td>
                   <td className="px-4 py-2">
                     <div className="flex items-center gap-2">

@@ -12,7 +12,7 @@ import type {
 
 // Google Business Profile (Locations / Reviews) v4.9 endpoints.
 // The integration uses OAuth2 with the My Business Account API.
-// We only sketch the shapes here — credentials must be supplied via OAuth.
+// We only sketch the shapes here - credentials must be supplied via OAuth.
 type GoogleReview = {
   name: string; // accounts/{a}/locations/{l}/reviews/{r}
   reviewId: string;

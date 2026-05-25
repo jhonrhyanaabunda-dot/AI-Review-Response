@@ -1,7 +1,7 @@
 import pino from "pino";
 
 /**
- * Plain pino — no `transport: pino-pretty` because that runs in a worker
+ * Plain pino - no `transport: pino-pretty` because that runs in a worker
  * thread that Next.js dev reaps, after which every subsequent log call
  * throws. Pipe through `pino-pretty` from the shell in dev if you want
  * the colorized output.

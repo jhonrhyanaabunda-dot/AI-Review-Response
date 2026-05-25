@@ -7,13 +7,13 @@ replies back to the source platform.
 
 ## Stack
 
-- **Next.js 15 (App Router) + TypeScript + Tailwind + shadcn/ui** — the dashboard
-- **PostgreSQL + Prisma** — durable storage
-- **Redis + BullMQ** — queues and rate limiting
-- **NextAuth v5** — credentials + Google OAuth, JWT sessions
-- **OpenAI API** — sentiment, generation, and QA passes
-- **A directed-graph agent runtime** — ingestion → sentiment → respond → escalate → QA → publish
-- **Docker Compose** — local stack (Postgres, Redis, app, worker)
+- **Next.js 15 (App Router) + TypeScript + Tailwind + shadcn/ui** - the dashboard
+- **PostgreSQL + Prisma** - durable storage
+- **Redis + BullMQ** - queues and rate limiting
+- **NextAuth v5** - credentials + Google OAuth, JWT sessions
+- **OpenAI API** - sentiment, generation, and QA passes
+- **A directed-graph agent runtime** - ingestion → sentiment → respond → escalate → QA → publish
+- **Docker Compose** - local stack (Postgres, Redis, app, worker)
 
 ## Quick start
 
@@ -75,5 +75,5 @@ and [docs/deployment.md](docs/deployment.md).
 This is a production-shaped scaffold: the agent graph, queues, schema, RBAC, and UI
 flows are real. Third-party provider credentials and outbound publish endpoints are
 shaped against the public API contracts but need live credentials and per-tenant
-OAuth setup before they can call production endpoints — see the per-provider TODOs
+OAuth setup before they can call production endpoints - see the per-provider TODOs
 in [src/providers/](src/providers/).

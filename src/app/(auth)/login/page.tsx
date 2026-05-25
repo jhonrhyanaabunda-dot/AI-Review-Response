@@ -3,14 +3,14 @@ import { Sparkles } from "lucide-react";
 import { LoginForm } from "./login-form";
 
 // useSearchParams() inside LoginForm requires the page to opt out of
-// static prerendering — otherwise Next 15 errors at build time asking
+// static prerendering - otherwise Next 15 errors at build time asking
 // for a Suspense boundary. Login is inherently dynamic anyway.
 export const dynamic = "force-dynamic";
 
 export default function LoginPage() {
   return (
     <div className="grid min-h-screen md:grid-cols-2">
-      {/* Left: dark navy hero panel — A3 brand */}
+      {/* Left: dark navy hero panel - A3 brand */}
       <div className="relative hidden overflow-hidden bg-a3-navy text-white md:block">
         <div
           aria-hidden

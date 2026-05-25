@@ -1,7 +1,7 @@
 import { Role } from "@prisma/client";
 
 /**
- * Permission catalog. Keep granular — combine via roleGrants below.
+ * Permission catalog. Keep granular - combine via roleGrants below.
  * Permissions are namespaced "<resource>:<action>".
  */
 export const PERMISSIONS = [

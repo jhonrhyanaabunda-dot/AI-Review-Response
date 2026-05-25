@@ -64,7 +64,7 @@ const STEP_META: Record<
     Icon: AlertTriangle,
     label: "Publish failed",
     tone: "danger",
-    description: "Upstream platform rejected the publish — will retry.",
+    description: "Upstream platform rejected the publish - will retry.",
   },
   ESCALATED: {
     Icon: ShieldCheck,

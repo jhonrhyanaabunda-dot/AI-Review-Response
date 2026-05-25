@@ -10,7 +10,7 @@ import type {
   ReviewProvider,
 } from "../base/types";
 
-// Better Business Bureau (BBB) — pulls reviews and complaints for a
+// Better Business Bureau (BBB) - pulls reviews and complaints for a
 // dealership's BBB profile. BBB exposes a partner Reviews API to accredited
 // businesses; the endpoint shape below mirrors that contract. Complaints
 // (separate from reviews) come through the same adapter and are normalized

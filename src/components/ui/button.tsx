@@ -9,11 +9,12 @@ import { cn } from "@/lib/utils/cn";
 //   Outline:     transparent w/ border, hover shifts to emerald text.
 //   Ghost / link: text-only emerald hover state.
 const buttonVariants = cva(
-  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold tracking-tight ring-offset-background transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+  // Adds a subtle press-scale via active:scale-[0.97] for snappy feedback.
+  "inline-flex items-center justify-center gap-2 whitespace-nowrap font-semibold tracking-tight ring-offset-background transition-all duration-150 active:scale-[0.97] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
   {
     variants: {
       variant: {
-        // A3 emerald CTA — pill + glow.
+        // A3 emerald CTA - pill + glow.
         default:
           "rounded-pill bg-primary text-primary-foreground shadow-emerald hover:bg-primary/90 hover:shadow-emerald-hover active:shadow-emerald-active active:opacity-80",
         // Same shape as primary but warns/destroys.
@@ -24,7 +25,7 @@ const buttonVariants = cva(
           "rounded-pill border border-input bg-background text-foreground hover:border-primary hover:text-primary",
         secondary:
           "rounded-pill bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        // Tertiary / nav links — text only.
+        // Tertiary / nav links - text only.
         ghost:
           "rounded-md text-foreground hover:text-primary hover:bg-primary/5",
         link:

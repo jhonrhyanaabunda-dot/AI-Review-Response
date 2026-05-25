@@ -4,7 +4,7 @@ import type { AgentState, Node } from "../types";
 /**
  * Loads the review + dealership configuration into the agent state.
  * Throws if the review or dealership has been deleted between
- * enqueue and execution — the worker will fail the job in that case.
+ * enqueue and execution - the worker will fail the job in that case.
  */
 export const ingestNode: Node = async (state: AgentState) => {
   const review = await prisma.review.findUnique({

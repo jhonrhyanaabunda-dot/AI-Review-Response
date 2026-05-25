@@ -33,7 +33,7 @@ type Sample = {
 };
 
 const POSITIVE: Sample[] = [
-  { rating: 5, authorName: "Maria L.", body: "Best buying experience ever. Carlos helped us trade up to a new Camry — easy and quick.", sentiment: Sentiment.POSITIVE, confidence: 0.92 },
+  { rating: 5, authorName: "Maria L.", body: "Best buying experience ever. Carlos helped us trade up to a new Camry - easy and quick.", sentiment: Sentiment.POSITIVE, confidence: 0.92 },
   { rating: 5, authorName: "Priya R.", body: "Loved the no-pressure sales approach. Jamal answered every question and didn't push extras.", sentiment: Sentiment.POSITIVE, confidence: 0.94 },
   { rating: 5, authorName: "Eric W.", body: "Service appointment was on time and the work was explained clearly. Will be back.", sentiment: Sentiment.POSITIVE, confidence: 0.9 },
   { rating: 5, authorName: "Aisha K.", body: "Bought our family SUV here. The team made financing painless and we drove off the same day.", sentiment: Sentiment.POSITIVE, confidence: 0.91 },
@@ -47,7 +47,7 @@ const POSITIVE: Sample[] = [
 ];
 
 const NEUTRAL: Sample[] = [
-  { rating: 3, authorName: "Mike T.", body: "Decent experience overall. The waiting area could use some work — wifi was spotty.", sentiment: Sentiment.NEUTRAL, confidence: 0.81 },
+  { rating: 3, authorName: "Mike T.", body: "Decent experience overall. The waiting area could use some work - wifi was spotty.", sentiment: Sentiment.NEUTRAL, confidence: 0.81 },
   { rating: 3, authorName: "Renee J.", body: "Got the car I wanted at a fair price. Wish the trade-in negotiation hadn't taken two hours.", sentiment: Sentiment.NEUTRAL, confidence: 0.77 },
   { rating: 3, authorName: "Chen L.", body: "Service was fine. Cost a bit more than the dealer down the road but they were quicker.", sentiment: Sentiment.NEUTRAL, confidence: 0.75 },
   { rating: 3, authorName: "Bea M.", body: "The car is great, the dealership is okay. Some communication gaps on delivery timing.", sentiment: Sentiment.NEUTRAL, confidence: 0.79 },
@@ -56,25 +56,25 @@ const NEUTRAL: Sample[] = [
 const NEGATIVE: Sample[] = [
   { rating: 2, authorName: "John D.", body: "Service department took twice the estimated time. No one called to update us. Won't be back.", sentiment: Sentiment.NEGATIVE, confidence: 0.74, flags: ["Service delay; verify timeline before publishing"] },
   { rating: 2, authorName: "Karen H.", body: "Salesperson kept upselling extras I didn't want even after I said no twice. Frustrating.", sentiment: Sentiment.NEGATIVE, confidence: 0.7, flags: ["High-pressure sales concern raised"] },
-  { rating: 2, authorName: "Brendan O.", body: "Quote on the phone didn't match the in-store quote. Felt like a bait-and-switch.", sentiment: Sentiment.NEGATIVE, confidence: 0.66, flags: ["Pricing complaint — verify quote before publishing"] },
-  { rating: 1, authorName: "Tasha R.", body: "Worst experience. Showed up for a confirmed appointment, was told the tech was out. Wasted my afternoon.", sentiment: Sentiment.ANGRY, confidence: 0.55, flags: ["Angry customer — recommend GM follow-up offline"] },
-  { rating: 1, authorName: "Dom P.", body: "Sold us a car with an undisclosed accident on the carfax. Going to dispute the sale.", sentiment: Sentiment.ANGRY, confidence: 0.48, flags: ["Allegation about undisclosed history — legal review recommended"] },
+  { rating: 2, authorName: "Brendan O.", body: "Quote on the phone didn't match the in-store quote. Felt like a bait-and-switch.", sentiment: Sentiment.NEGATIVE, confidence: 0.66, flags: ["Pricing complaint - verify quote before publishing"] },
+  { rating: 1, authorName: "Tasha R.", body: "Worst experience. Showed up for a confirmed appointment, was told the tech was out. Wasted my afternoon.", sentiment: Sentiment.ANGRY, confidence: 0.55, flags: ["Angry customer - recommend GM follow-up offline"] },
+  { rating: 1, authorName: "Dom P.", body: "Sold us a car with an undisclosed accident on the carfax. Going to dispute the sale.", sentiment: Sentiment.ANGRY, confidence: 0.48, flags: ["Allegation about undisclosed history - legal review recommended"] },
 ];
 
 const LEGAL: Sample[] = [
-  { rating: 1, authorName: "Anonymous", body: "They sold us a lemon and won't honor the warranty. We've contacted our lawyer and the BBB.", sentiment: Sentiment.LEGAL_RISK, confidence: 0.32, flags: ["Legal language detected — escalation recommended", "Mentions lemon law and pending counsel"] },
-  { rating: 1, authorName: "M.G.", body: "Filing a complaint with the state attorney general about predatory finance terms.", sentiment: Sentiment.LEGAL_RISK, confidence: 0.3, flags: ["State AG referenced — escalate to legal counsel"] },
+  { rating: 1, authorName: "Anonymous", body: "They sold us a lemon and won't honor the warranty. We've contacted our lawyer and the BBB.", sentiment: Sentiment.LEGAL_RISK, confidence: 0.32, flags: ["Legal language detected - escalation recommended", "Mentions lemon law and pending counsel"] },
+  { rating: 1, authorName: "M.G.", body: "Filing a complaint with the state attorney general about predatory finance terms.", sentiment: Sentiment.LEGAL_RISK, confidence: 0.3, flags: ["State AG referenced - escalate to legal counsel"] },
 ];
 
 const DRAFT = {
   positive: (n: string, d: string, s: string) =>
-    `${n}, thank you so much for taking the time to share this! Stories like yours are why we do what we do. We're glad ${d} could make this a smooth experience. Welcome to the family — drive safe and reach out any time.\n${s}`,
+    `${n}, thank you so much for taking the time to share this! Stories like yours are why we do what we do. We're glad ${d} could make this a smooth experience. Welcome to the family - drive safe and reach out any time.\n${s}`,
   neutral: (n: string, d: string, s: string) =>
     `${n}, thanks for the honest feedback. We've noted your points and will share them with the team this week. If there's anything we can do to follow up, please reach out to us directly at ${d}.\n${s}`,
   negative: (n: string, _d: string, s: string) =>
     `${n}, we're sorry this fell short of what you should expect from us. Could you reach out to our team directly so we can review what happened? We'd like the chance to make this right.\n${s}`,
   legal: (_n: string, _d: string, s: string) =>
-    `We take concerns like this seriously. Our General Manager would like to review this matter with you directly — please contact us so we can address your specific situation.\n${s}`,
+    `We take concerns like this seriously. Our General Manager would like to review this matter with you directly - please contact us so we can address your specific situation.\n${s}`,
 };
 
 function firstName(full: string) {
@@ -143,7 +143,7 @@ async function main() {
         name: "Smith Toyota",
         brand: "Toyota",
         tonePreset: TonePreset.FRIENDLY,
-        signOff: "— The Smith Toyota Team",
+        signOff: "- The Smith Toyota Team",
         escalationKeywords: ["lemon law", "fraud", "lawyer", "discrim", "BBB", "attorney general"],
         escalationEmails: ["gm@example.com"],
         autoPublishThreshold: 5,
@@ -160,7 +160,7 @@ async function main() {
         name: "Bayside Honda",
         brand: "Honda",
         tonePreset: TonePreset.OEM_COMPLIANT,
-        signOff: "— The Bayside Honda Team",
+        signOff: "- The Bayside Honda Team",
         escalationKeywords: ["lemon law", "lawyer", "regulator", "BBB", "attorney general"],
         escalationEmails: ["gm@example.com"],
         autoPublishThreshold: 5,
@@ -213,7 +213,7 @@ async function main() {
           locationId: loc.id,
           platform,
           externalId: `${d.slug}-${platform.toLowerCase()}`,
-          displayName: `${d.name} — ${platform}`,
+          displayName: `${d.name} - ${platform}`,
           isActive: true,
         },
       });
@@ -245,7 +245,7 @@ async function main() {
   });
   if (existingReviewCount > 0) {
     console.log(
-      `Seed complete. (Skipped bulk review insertion — org already has ${existingReviewCount} reviews.)`,
+      `Seed complete. (Skipped bulk review insertion - org already has ${existingReviewCount} reviews.)`,
     );
     return;
   }

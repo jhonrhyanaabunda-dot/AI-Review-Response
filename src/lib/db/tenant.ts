@@ -4,7 +4,7 @@ import type { Prisma } from "@prisma/client";
 /**
  * Returns a Prisma client where every query is automatically scoped to the
  * given organizationId. This is defense in depth on top of route-level
- * RBAC checks — every query that touches tenant-scoped tables is filtered.
+ * RBAC checks - every query that touches tenant-scoped tables is filtered.
  *
  * Tables without an organizationId column (User, Account, Session, etc.)
  * are passed through unchanged. RBAC at the route layer remains responsible

@@ -62,7 +62,7 @@ export default async function SettingsPage() {
           <Card>
             <CardHeader>
               <CardTitle>Billing</CardTitle>
-              <CardDescription>Plan: {org.plan}. Billing email: {org.billingEmail ?? "—"}.</CardDescription>
+              <CardDescription>Plan: {org.plan}. Billing email: {org.billingEmail ?? "-"}.</CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
               Stripe integration goes here. See docs/architecture.md.

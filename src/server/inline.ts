@@ -3,7 +3,7 @@
  *
  * In production, regenerate and publish are enqueued onto BullMQ and a
  * separate worker fleet processes them. For demos we don't want to require
- * Redis + worker just to see the UI in action — so when DEMO_MODE is on
+ * Redis + worker just to see the UI in action - so when DEMO_MODE is on
  * (or REDIS is unreachable), the API routes run the agent and publish steps
  * synchronously inside the request handler.
  */

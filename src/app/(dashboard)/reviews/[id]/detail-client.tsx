@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { format } from "date-fns";
 import { toast } from "sonner";
-import { CheckCircle2, RefreshCw, Sparkles, XCircle } from "lucide-react";
+import { CheckCircle2, RefreshCw, Sparkles, XCircle, Wand2 } from "lucide-react";
+import { useTypewriter } from "@/hooks/use-typewriter";
 import type {
   AiResponse,
   Dealership,
@@ -52,6 +53,15 @@ export function ReviewDetailClient({ review }: { review: FullReview }) {
   const { request, loading } = useApi();
   const draft = activeResponse(review.responses);
   const [body, setBody] = useState(draft?.finalBody ?? draft?.draftBody ?? "");
+  const [generating, setGenerating] = useState(false);
+  const [revealText, setRevealText] = useState<string | null>(null);
+
+  // Typewriter only runs while `revealText` is set (just after a regenerate).
+  const { shown: typed, done: typedDone } = useTypewriter(revealText ?? "", {
+    enabled: !!revealText,
+    charsPerTick: 4,
+    tickMs: 20,
+  });
 
   const submit = async (decision: "APPROVED" | "REJECTED") => {
     if (!draft) return;
@@ -69,12 +79,26 @@ export function ReviewDetailClient({ review }: { review: FullReview }) {
 
   const regenerate = async () => {
     if (!draft) return;
+    setGenerating(true);
     try {
       await request(`/api/responses/${draft.id}/regenerate`, { method: "POST" });
-      toast.success("Regeneration queued");
+      // Fetch the freshly created draft so we can animate it in.
+      const detail = await fetch(`/api/reviews/${review.id}`, { cache: "no-store" })
+        .then((r) => r.json())
+        .catch(() => null);
+      const fresh =
+        detail?.data?.responses?.find((r: { supersededAt: null | Date }) => !r.supersededAt) ??
+        null;
+      const newBody = fresh?.draftBody ?? draft.draftBody;
+      setBody(newBody);
+      setRevealText(newBody);
+      toast.success("AI generated a new draft");
+      // Refresh page in the background so other panels (timeline, etc.) update.
       router.refresh();
     } catch (e) {
       toast.error((e as Error).message);
+    } finally {
+      setGenerating(false);
     }
   };
 
@@ -119,8 +143,9 @@ export function ReviewDetailClient({ review }: { review: FullReview }) {
                 </div>
               )}
             </div>
-            <Button variant="ghost" size="sm" onClick={regenerate} disabled={loading}>
-              <RefreshCw className="h-4 w-4" /> Regenerate
+            <Button variant="ghost" size="sm" onClick={regenerate} disabled={loading || generating}>
+              <RefreshCw className={`h-4 w-4 ${generating ? "animate-spin" : ""}`} />
+              {generating ? "Generating…" : "Regenerate"}
             </Button>
           </CardHeader>
           <CardContent className="space-y-3">
@@ -129,12 +154,27 @@ export function ReviewDetailClient({ review }: { review: FullReview }) {
                 <Sparkles className="h-4 w-4" />
                 Waiting for AI to generate a draft…
               </div>
+            ) : generating || (revealText && !typedDone) ? (
+              // Live-AI moment: stream the new draft in character-by-character.
+              <div className="relative rounded-md border bg-primary/5 p-4 text-sm leading-relaxed">
+                <div className="mb-2 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wider text-primary">
+                  <Wand2 className="h-3.5 w-3.5 animate-pulse" />
+                  AI is writing…
+                </div>
+                <pre className="whitespace-pre-wrap font-sans text-foreground">
+                  {typed}
+                  <span className="ml-0.5 inline-block h-3.5 w-[2px] -mb-0.5 bg-primary align-middle animate-pulse" />
+                </pre>
+              </div>
             ) : (
               <>
                 <Textarea
                   rows={8}
                   value={body}
-                  onChange={(e) => setBody(e.target.value)}
+                  onChange={(e) => {
+                    setBody(e.target.value);
+                    setRevealText(null);
+                  }}
                   disabled={["PUBLISHED", "REJECTED", "FAILED"].includes(draft.status)}
                 />
                 <div className="flex justify-end gap-2">

@@ -25,9 +25,9 @@ Constraints:
 - End with the provided sign-off if any, otherwise close with "Sincerely, the Team".
 - If the dealership provided custom AI instructions, treat them as additional constraints.
 - Output strictly valid JSON with keys:
-    body: string                — the response, plain text only
-    confidence: number 0..1     — your confidence the response is publish-ready
-    flaggedReasons: string[]    — empty unless you detected risk; reasons in short form
+    body: string                - the response, plain text only
+    confidence: number 0..1     - your confidence the response is publish-ready
+    flaggedReasons: string[]    - empty unless you detected risk; reasons in short form
 `;
 
 export const QA_SYSTEM = `You are a strict editor reviewing a draft response to a public review.

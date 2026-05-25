@@ -20,7 +20,7 @@ export default async function DashboardLayout({ children }: { children: React.Re
     <div className="flex h-screen overflow-hidden">
       <Sidebar />
       <div className="flex flex-1 flex-col overflow-hidden">
-        <Topbar user={session.user} orgName={org?.name ?? "—"} />
+        <Topbar user={session.user} orgName={org?.name ?? "-"} />
         <main className="flex-1 overflow-auto bg-background">
           <div className="mx-auto w-full max-w-7xl p-6 animate-fade-in">{children}</div>
         </main>

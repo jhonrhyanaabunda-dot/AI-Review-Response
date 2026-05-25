@@ -4,9 +4,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata = {
-  title: "A3 Brands AI Review Response — Pitch",
+  title: "A3 Brands AI Review Response - Pitch",
   description:
-    "Why dealership clients need automated review response — the math, the moat, and the rollout plan.",
+    "Why dealership clients need automated review response - the math, the moat, and the rollout plan.",
 };
 
 export default function PitchPage() {
@@ -36,12 +36,12 @@ export default function PitchPage() {
           Internal pitch · Kelly → Tim
         </span>
         <h1 className="mt-6 text-balance text-4xl font-black leading-[1.1] tracking-tight md:text-display-1">
-          AI Review Response —{" "}
+          AI Review Response -{" "}
           <span className="text-primary">sellable to every dealership client.</span>
         </h1>
         <p className="mt-5 text-pretty text-base leading-relaxed text-muted-foreground md:text-lg">
           Dealership GMs spend hours every week chasing reviews across six different
-          platforms — and most go unanswered. A3 Brands AI Review Response makes the
+          platforms - and most go unanswered. A3 Brands AI Review Response makes the
           response one click instead of one hour.
         </p>
 
@@ -62,7 +62,7 @@ export default function PitchPage() {
             <li className="flex items-start gap-3">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive" />
               Most dealerships only respond to{" "}
-              <strong className="text-foreground">30-50%</strong> — and almost never
+              <strong className="text-foreground">30-50%</strong> - and almost never
               within 24 hours.
             </li>
             <li className="flex items-start gap-3">
@@ -73,7 +73,7 @@ export default function PitchPage() {
             </li>
             <li className="flex items-start gap-3">
               <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-destructive" />
-              GMs can't write 40 thoughtful, on-brand responses a month — and
+              GMs can't write 40 thoughtful, on-brand responses a month - and
               shouldn't have to.
             </li>
           </ul>
@@ -98,7 +98,7 @@ export default function PitchPage() {
             The numbers don't lie
           </span>
           <h2 className="mt-2 text-2xl font-black tracking-tight md:text-display-3">
-            The ROI math — per dealership.
+            The ROI math - per dealership.
           </h2>
           <p className="mt-2 text-sm text-muted-foreground">Conservative assumptions.</p>
           <div className="mt-6 grid gap-4 md:grid-cols-2">
@@ -107,7 +107,7 @@ export default function PitchPage() {
                 Icon: Clock,
                 stat: "~12 hrs / mo",
                 label:
-                  "GM time saved at 30 reviews × 25 min each — reclaimed for ops and customer care.",
+                  "GM time saved at 30 reviews × 25 min each - reclaimed for ops and customer care.",
               },
               {
                 Icon: Star,
@@ -119,7 +119,7 @@ export default function PitchPage() {
                 Icon: ShieldCheck,
                 stat: "0 missed",
                 label:
-                  "Legal-risk and BBB complaints — auto-flagged for GM + legal review before any public reply.",
+                  "Legal-risk and BBB complaints - auto-flagged for GM + legal review before any public reply.",
               },
               {
                 Icon: DollarSign,
@@ -153,7 +153,7 @@ export default function PitchPage() {
             {[
               {
                 t: "Existing dealership relationships.",
-                d: "A3 Brands already serves this exact buyer — no cold acquisition.",
+                d: "A3 Brands already serves this exact buyer - no cold acquisition.",
               },
               {
                 t: "BBB included.",
@@ -169,7 +169,7 @@ export default function PitchPage() {
               },
               {
                 t: "Legal-safe by default.",
-                d: "Lawyers, lemon-law claims, regulator threats — auto-flagged for human review. Never auto-publish into a lawsuit.",
+                d: "Lawyers, lemon-law claims, regulator threats - auto-flagged for human review. Never auto-publish into a lawsuit.",
               },
             ].map(({ t, d }) => (
               <li key={t} className="flex items-start gap-3">
@@ -232,7 +232,7 @@ export default function PitchPage() {
 
       <footer className="mt-16 border-t bg-background">
         <div className="mx-auto max-w-3xl px-6 py-8 text-center text-xs text-muted-foreground">
-          A3 Brands AI Review Response — prototype. Internal pitch document.
+          A3 Brands AI Review Response - prototype. Internal pitch document.
         </div>
       </footer>
     </div>

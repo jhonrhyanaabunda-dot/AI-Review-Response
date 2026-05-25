@@ -83,7 +83,7 @@ export async function ratingTrend(
   range: AnalyticsRange,
   scope: { dealershipId?: string | null } = {},
 ) {
-  // Branch on parameterization to keep the query 100% bound — never
+  // Branch on parameterization to keep the query 100% bound - never
   // interpolate identifiers from variables into the SQL string.
   const rows = scope.dealershipId
     ? await prisma.$queryRaw<Array<{ day: Date; avg: number; count: bigint }>>`
@@ -112,6 +112,28 @@ export async function ratingTrend(
     day: r.day.toISOString().slice(0, 10),
     avg: Number(r.avg.toFixed(2)),
     count: Number(r.count),
+  }));
+}
+
+export async function platformBreakdown(
+  organizationId: string,
+  range: AnalyticsRange,
+  scope: { dealershipId?: string | null } = {},
+) {
+  const rows = await prisma.review.groupBy({
+    by: ["platform"],
+    where: {
+      organizationId,
+      ...(scope.dealershipId ? { dealershipId: scope.dealershipId } : {}),
+      postedAt: { gte: range.from, lte: range.to },
+    },
+    _count: { _all: true },
+    _avg: { rating: true },
+  });
+  return rows.map((r) => ({
+    platform: r.platform,
+    count: r._count._all,
+    avgRating: Number((r._avg.rating ?? 0).toFixed(2)),
   }));
 }
 

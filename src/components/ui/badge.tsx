@@ -2,7 +2,7 @@ import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils/cn";
 
-// A3 badges — small caps, tight letter spacing, sharp 4px corners
+// A3 badges - small caps, tight letter spacing, sharp 4px corners
 // (DESIGN.md §4 "Dealership Badge" + "Status Badge").
 const badgeVariants = cva(
   "inline-flex items-center rounded-sm border px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.05em] transition-colors",

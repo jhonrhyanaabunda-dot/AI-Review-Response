@@ -27,9 +27,9 @@ The Vercel deployment is stateless and cannot host BullMQ workers
 (serverless functions can't hold blocking Redis connections). Run the
 worker image on:
 
-- **Fly.io** — `flyctl deploy --dockerfile docker/Dockerfile.worker`
-- **Render** — Background Worker service pointing at `docker/Dockerfile.worker`
-- **AWS ECS / GCP Cloud Run jobs / Kubernetes** — see deployment manifests in your infra repo
+- **Fly.io** - `flyctl deploy --dockerfile docker/Dockerfile.worker`
+- **Render** - Background Worker service pointing at `docker/Dockerfile.worker`
+- **AWS ECS / GCP Cloud Run jobs / Kubernetes** - see deployment manifests in your infra repo
 
 Run **2+ replicas** in production. The scheduler is idempotent (BullMQ
 deduplicates the repeatable job by jobId), so multiple replicas are safe.
@@ -65,11 +65,11 @@ within provider timeout windows.
 
 `ENCRYPTION_KEY` rotation requires a one-shot script that walks
 `ApiToken`, decrypts with the old key, re-encrypts with the new. Plan for
-this — write the rotation script when you ship the second customer.
+this - write the rotation script when you ship the second customer.
 
 ## Backups
 
 - Postgres: nightly snapshots + WAL archiving. The data is mostly customer
   reviews; tolerable RPO is 5 min, RTO is 30 min.
-- Redis: not authoritative — only queue state. Safe to lose; jobs are
+- Redis: not authoritative - only queue state. Safe to lose; jobs are
   recreated by the scheduler.

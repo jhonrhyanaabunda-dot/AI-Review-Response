@@ -3,7 +3,7 @@
 @tailwind utilities;
 
 /*
- * A3 Brands design tokens — see DESIGN.md.
+ * A3 Brands design tokens - see DESIGN.md.
  * Numbers below are HSL components (no commas, no `hsl()` wrapper) so
  * `hsl(var(--primary))` works.
  *
@@ -106,7 +106,7 @@
   }
 
   h1, h2, h3, h4, h5, h6 {
-    /* DESIGN.md: 900-weight headings, 700 for H3 — set per-element where used */
+    /* DESIGN.md: 900-weight headings, 700 for H3 - set per-element where used */
     font-family: var(--font-sora), Sora, sans-serif;
     letter-spacing: -0.01em;
   }

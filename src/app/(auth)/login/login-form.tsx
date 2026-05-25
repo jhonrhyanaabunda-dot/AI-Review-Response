@@ -31,7 +31,7 @@ export function LoginForm() {
       toast.error("Invalid credentials");
       return;
     }
-    // Hard navigation — guarantees the freshly set auth cookie is
+    // Hard navigation - guarantees the freshly set auth cookie is
     // included on the next server-rendered page request. `router.push`
     // would soft-nav before the cookie reaches the next RSC fetch and
     // the dashboard's `auth()` call would return null, bouncing back

@@ -8,7 +8,8 @@ export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDi
       // A3 spec §4: 16px radius (set by --radius), flat by default, subtle
       // shadow on hover. Soft border keeps cards readable on the surface tone.
       className={cn(
-        "rounded-lg border bg-card text-card-foreground transition-shadow hover:shadow-subtle",
+        // Subtle lift on hover (DESIGN.md elevation: flat → subtle).
+        "rounded-lg border bg-card text-card-foreground transition-all duration-200 hover:-translate-y-[1px] hover:shadow-subtle",
         className,
       )}
       {...props}

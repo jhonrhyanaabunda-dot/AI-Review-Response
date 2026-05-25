@@ -33,7 +33,7 @@ export default async function DealershipsPage() {
             <CardHeader className="flex flex-row items-center justify-between space-y-0">
               <div>
                 <CardTitle className="text-base">{d.name}</CardTitle>
-                <p className="text-xs text-muted-foreground">{d.brand ?? "—"}</p>
+                <p className="text-xs text-muted-foreground">{d.brand ?? "-"}</p>
               </div>
               <Badge variant="outline">{d.tonePreset}</Badge>
             </CardHeader>

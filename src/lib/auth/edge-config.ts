@@ -2,7 +2,7 @@ import type { NextAuthConfig } from "next-auth";
 
 /**
  * Edge-runtime-safe auth config. Contains NO providers that use native
- * modules (argon2, bcrypt, prisma) — those run only at the API/server-
+ * modules (argon2, bcrypt, prisma) - those run only at the API/server-
  * component layer in the Node runtime via `src/lib/auth/config.ts`.
  *
  * The middleware uses this slim config to validate JWT cookies without

@@ -13,7 +13,7 @@ export type PublishedItem = {
 };
 
 /**
- * "Recently published" strip — surfaces approvals that just shipped so the
+ * "Recently published" strip - surfaces approvals that just shipped so the
  * GM sees the outcome of their one-click action immediately when they
  * return to the inbox.
  */

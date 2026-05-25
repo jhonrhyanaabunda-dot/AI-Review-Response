@@ -31,10 +31,10 @@
 The tenant root is `Organization` (an agency). Every tenant-scoped row carries
 `organizationId`. Authorization is enforced at two layers:
 
-1. **Route layer** — `requirePermission(p, { dealershipId? })` reads the
+1. **Route layer** - `requirePermission(p, { dealershipId? })` reads the
    session, finds the active membership in the active org, and rejects on
    missing permission or out-of-scope dealership.
-2. **Data layer** — `tenantClient(orgId)` returns a Prisma extension that
+2. **Data layer** - `tenantClient(orgId)` returns a Prisma extension that
    injects the `organizationId` into every `where` and `data` payload for
    tenant-scoped models. Even a buggy route handler can't read another
    tenant's rows when going through this client.
@@ -48,7 +48,7 @@ is RLS-ready.
 `src/agents/graph/index.ts` is a small directed graph executor. Each node is
 an idempotent function that reads `AgentState`, mutates the database, and
 sets `state.next`. The graph supports two terminal states: `done` and
-`approval` — the latter pauses the pipeline until a human acts, at which
+`approval` - the latter pauses the pipeline until a human acts, at which
 point the API enqueues a publish job that resumes execution.
 
 ```
@@ -75,7 +75,7 @@ interface ReviewProvider {
 ```
 
 The registry in `src/providers/base/registry.ts` is the single composition
-point — adding a new platform (TripAdvisor, BBB, Reddit, …) is a new file
+point - adding a new platform (TripAdvisor, BBB, Reddit, …) is a new file
 plus one map entry.
 
 ## Queues
@@ -88,7 +88,7 @@ plus one map entry.
 | `publish-response` | approval API, agent auto-publish | `processPublishResponse` | call provider, mark published |
 
 All jobs default to **5 attempts, exponential backoff (2s base)** and
-**rotation of completed/failed jobs** (24h / 7d) — see `jobDefaults`.
+**rotation of completed/failed jobs** (24h / 7d) - see `jobDefaults`.
 
 ## Secrets
 
@@ -110,7 +110,7 @@ calling a provider, never on the client.
 The architecture is set up so the next product ("AI Inbox Manager" for
 dealership lead emails) can reuse the same building blocks:
 
-- The agent graph is generic over `AgentState` — only the nodes change.
+- The agent graph is generic over `AgentState` - only the nodes change.
 - The provider pattern handles any inbound/outbound message channel.
 - The RBAC catalog is permission-namespaced (`inbox:read`, `inbox:reply`)
   so new products only add permissions, not new role hierarchies.

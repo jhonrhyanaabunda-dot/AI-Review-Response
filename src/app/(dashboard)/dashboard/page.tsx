@@ -2,12 +2,15 @@ import { requirePermission } from "@/server/rbac/guard";
 import {
   dashboardSummary,
   dealershipBreakdown,
+  platformBreakdown,
   ratingTrend,
   responseTimeP50,
 } from "@/server/services/analytics";
 import { StatCards } from "@/components/analytics/stat-cards";
 import { TrendChart } from "@/components/analytics/trend-chart";
 import { DealershipTable } from "@/components/analytics/dealership-table";
+import { SentimentDonut } from "@/components/analytics/sentiment-donut";
+import { PlatformBars } from "@/components/analytics/platform-bars";
 
 export const dynamic = "force-dynamic";
 
@@ -17,11 +20,12 @@ export default async function DashboardPage() {
   const from = new Date(to.getTime() - 30 * 24 * 60 * 60 * 1000);
   const range = { from, to };
 
-  const [summary, trend, breakdown, p50] = await Promise.all([
+  const [summary, trend, breakdown, p50, platforms] = await Promise.all([
     dashboardSummary(ctx.organizationId, range, { dealershipId: ctx.dealershipId }),
     ratingTrend(ctx.organizationId, range, { dealershipId: ctx.dealershipId }),
     dealershipBreakdown(ctx.organizationId, range),
     responseTimeP50(ctx.organizationId, range),
+    platformBreakdown(ctx.organizationId, range, { dealershipId: ctx.dealershipId }),
   ]);
 
   return (
@@ -37,6 +41,10 @@ export default async function DashboardPage() {
       </div>
       <StatCards summary={summary} responseTimeP50Seconds={p50} />
       <TrendChart data={trend} />
+      <div className="grid gap-4 lg:grid-cols-2">
+        <PlatformBars data={platforms} />
+        <SentimentDonut data={summary.sentiment as Record<string, number>} />
+      </div>
       <DealershipTable rows={breakdown} />
     </div>
   );

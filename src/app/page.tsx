@@ -54,13 +54,13 @@ export default async function LandingPage() {
     {
       Icon: Send,
       title: "Published back to the platform",
-      body: "The approved reply lands on Google, Yelp, BBB — wherever the review came from.",
+      body: "The approved reply lands on Google, Yelp, BBB - wherever the review came from.",
     },
   ];
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Nav — A3 charcoal text on white, emerald hover */}
+      {/* Nav - A3 charcoal text on white, emerald hover */}
       <header className="sticky top-0 z-10 border-b bg-background/85 backdrop-blur">
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-6 md:px-14">
           <div className="flex items-center gap-2">
@@ -85,7 +85,7 @@ export default async function LandingPage() {
         </div>
       </header>
 
-      {/* HERO — DESIGN.md §4 "Dark Container": navy bg, white text, 56-64px padding */}
+      {/* HERO - DESIGN.md §4 "Dark Container": navy bg, white text, 56-64px padding */}
       <section className="relative overflow-hidden bg-a3-navy text-white">
         <div
           aria-hidden
@@ -109,7 +109,7 @@ export default async function LandingPage() {
             <p className="mx-auto mt-6 max-w-2xl text-pretty text-base leading-relaxed text-white/70 md:text-lg">
               A3 Brands AI Review Response auto-pulls reviews from Google, Yelp,
               Cars.com, DealerRater, Facebook, and BBB. AI drafts the reply. The GM
-              approves with one click. We publish it back to the platform —
+              approves with one click. We publish it back to the platform -
               automatically.
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
@@ -147,7 +147,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* HOW IT WORKS — light surface section */}
+      {/* HOW IT WORKS - light surface section */}
       <section className="bg-a3-surface">
         <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-14">
           <div className="mb-14 text-center">
@@ -158,7 +158,7 @@ export default async function LandingPage() {
               How it works
             </h2>
             <p className="mx-auto mt-3 max-w-xl text-sm text-muted-foreground">
-              From new review to published reply — typically under 90 seconds.
+              From new review to published reply - typically under 90 seconds.
             </p>
           </div>
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-5">
@@ -182,7 +182,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* STATS — A3 numbers-don't-lie style */}
+      {/* STATS - A3 numbers-don't-lie style */}
       <section className="bg-background">
         <div className="mx-auto max-w-[1440px] px-6 py-20 md:px-14">
           <div className="mb-12 text-center">
@@ -195,8 +195,8 @@ export default async function LandingPage() {
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {[
-              { stat: "90s", label: "Median time from new review to published reply — vs. days or weeks today." },
-              { stat: "6", label: "Review platforms in one inbox. Including BBB — which most tools skip." },
+              { stat: "90s", label: "Median time from new review to published reply - vs. days or weeks today." },
+              { stat: "6", label: "Review platforms in one inbox. Including BBB - which most tools skip." },
               { stat: "1-click", label: "What it takes for a GM to approve a reply and have it published back." },
             ].map((s) => (
               <Card key={s.stat} className="border-border/60">
@@ -213,7 +213,7 @@ export default async function LandingPage() {
         </div>
       </section>
 
-      {/* Footer CTA — dark band */}
+      {/* Footer CTA - dark band */}
       <section className="bg-a3-navy text-white">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-6 px-6 py-16 text-center md:px-14">
           <h2 className="max-w-2xl text-3xl font-black tracking-tight md:text-display-2">
@@ -233,7 +233,7 @@ export default async function LandingPage() {
 
       <footer className="border-t bg-background">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-3 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-14">
-          <div>© {new Date().getFullYear()} A3 Brands. AI Review Response — prototype.</div>
+          <div>© {new Date().getFullYear()} A3 Brands. AI Review Response - prototype.</div>
           <div className="flex items-center gap-5">
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
             <Link href="/login" className="hover:text-primary">Sign in</Link>

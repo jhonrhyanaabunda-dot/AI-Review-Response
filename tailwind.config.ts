@@ -84,7 +84,7 @@ const config: Config = {
         display: ["var(--font-sora)", "Sora", "system-ui", "sans-serif"],
       },
       fontSize: {
-        // A3 display scale — pinned for hero typography (DESIGN.md §3).
+        // A3 display scale - pinned for hero typography (DESIGN.md §3).
         "display-1": ["51px", { lineHeight: "56px", letterSpacing: "0.02em" }],
         "display-2": ["35px", { lineHeight: "39px", letterSpacing: "0.015em" }],
         "display-3": ["28px", { lineHeight: "33px", letterSpacing: "0.01em" }],

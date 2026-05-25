@@ -56,7 +56,7 @@ function classify(text: string) {
     sentiment === "POSITIVE"
       ? ""
       : sentiment === "LEGAL_RISK"
-        ? "Reviewer references legal action — escalate before any public response."
+        ? "Reviewer references legal action - escalate before any public response."
         : sentiment === "ANGRY"
           ? "Customer is angry; lead with empathy and an offline contact path."
           : "Customer flags an issue worth a direct, accountable reply.";
@@ -87,7 +87,7 @@ function parseRespondPrompt(user: string) {
   const dealership = user.match(/Dealership:\s*([^\n(]+)/)?.[1]?.trim() ?? "Our Team";
   const brand = user.match(/Dealership:[^(]*\(([^)]+)\)/)?.[1]?.trim() ?? null;
   const tone = user.match(/Tone:\s*([A-Z_]+)/)?.[1] ?? "FRIENDLY";
-  const signOff = user.match(/Sign off as:\s*(.+)/)?.[1]?.trim() ?? `— The ${dealership} Team`;
+  const signOff = user.match(/Sign off as:\s*(.+)/)?.[1]?.trim() ?? `- The ${dealership} Team`;
   const reviewer = user.match(/Reviewer name:\s*(.+)/)?.[1]?.trim();
   const rating = Number(user.match(/Rating:\s*(\d)/)?.[1] ?? 0);
   const body = user.split("Review body:")[1]?.trim() ?? user;
@@ -104,7 +104,7 @@ function mockRespondBody(user: string) {
       greeting +
       pick([
         "thank you so much for taking the time to share this! ",
-        "this absolutely made our day — thank you for the kind words! ",
+        "this absolutely made our day - thank you for the kind words! ",
         "we genuinely appreciate you sharing your experience. ",
       ]) +
       pick([
@@ -114,7 +114,7 @@ function mockRespondBody(user: string) {
       ]) +
       pick([
         `Looking forward to seeing you again at ${ctx.dealership}.`,
-        "Drive safe — and come visit us any time you need anything.",
+        "Drive safe - and come visit us any time you need anything.",
         "Welcome to the family, and please reach out whenever we can help.",
       ]) +
       `\n${ctx.signOff}`
@@ -125,13 +125,13 @@ function mockRespondBody(user: string) {
     return (
       greeting +
       pick([
-        "thank you for sharing this directly with us — that's how we improve. ",
+        "thank you for sharing this directly with us - that's how we improve. ",
         "we're sorry your experience didn't meet expectations, and we want to make this right. ",
         "this isn't the experience we want for any customer. ",
       ]) +
       pick([
         "Could you reach out to our team directly so we can review what happened? ",
-        "We'd appreciate the chance to take another look — would you mind reaching out so we can help? ",
+        "We'd appreciate the chance to take another look - would you mind reaching out so we can help? ",
         "We'd like to learn more so we can fix this for you and for the next customer. ",
       ]) +
       "We take this feedback seriously.\n" +
@@ -142,7 +142,7 @@ function mockRespondBody(user: string) {
   return (
     greeting +
     pick([
-      "thanks for the honest feedback — we appreciate the time you took. ",
+      "thanks for the honest feedback - we appreciate the time you took. ",
       "we appreciate you sharing this with us. ",
     ]) +
     pick([
@@ -160,7 +160,7 @@ function mockQa(user: string) {
   const draft = user.split("Draft response:")[1]?.trim() ?? "";
   const issues: string[] = [];
   if (/\b(guarantee|promise|will fix|definitely)\b/i.test(draft)) {
-    issues.push("Removed an open-ended promise — replaced with 'we'll review'.");
+    issues.push("Removed an open-ended promise - replaced with 'we'll review'.");
   }
   if (/\b(competitor|other dealer|next door)\b/i.test(draft)) {
     issues.push("Removed a reference to competitors.");
