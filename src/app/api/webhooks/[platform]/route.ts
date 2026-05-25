@@ -3,8 +3,8 @@ import { ReviewPlatform } from "@prisma/client";
 import { z } from "zod";
 import { prisma } from "@/lib/db/prisma";
 import { hashToken, safeEqual } from "@/lib/crypto";
-import { jobDefaults, syncReviewsQueue } from "@/workers/queues";
 import { logger } from "@/lib/utils/logger";
+// Lazy-import @/workers/queues inside the handler — see api/sync/route.ts.
 
 const PLATFORMS = ["google", "yelp", "dealerrater", "carsdotcom", "facebook", "bbb"] as const;
 type Slug = (typeof PLATFORMS)[number];
@@ -66,6 +66,7 @@ export async function POST(
     return NextResponse.json({ ok: false, error: "signature" }, { status: 401 });
   }
 
+  const { syncReviewsQueue, jobDefaults } = await import("@/workers/queues");
   await syncReviewsQueue.add(
     "webhook",
     {

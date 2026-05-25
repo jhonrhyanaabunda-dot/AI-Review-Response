@@ -2,8 +2,10 @@ import { z } from "zod";
 import { requirePermission } from "@/server/rbac/guard";
 import { handleApiError, ok } from "@/lib/utils/api";
 import { prisma } from "@/lib/db/prisma";
-import { jobDefaults, syncReviewsQueue } from "@/workers/queues";
 import { NotFoundError } from "@/lib/utils/errors";
+// Note: @/workers/queues is imported lazily inside the handler so the
+// module (which instantiates ioredis + BullMQ) doesn't open a TCP
+// connection during Next.js build-time "Collecting page data" step.
 
 const schema = z.object({
   sourceId: z.string().optional(),
@@ -31,6 +33,7 @@ export async function POST(req: Request) {
     });
     if (sources.length === 0) throw new NotFoundError("No active sources match");
 
+    const { syncReviewsQueue, jobDefaults } = await import("@/workers/queues");
     for (const s of sources) {
       await syncReviewsQueue.add(
         body.kind,
