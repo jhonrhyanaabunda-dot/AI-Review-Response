@@ -9,6 +9,7 @@ import {
   CheckCircle2,
   Inbox,
   X,
+  Presentation,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -54,6 +55,23 @@ export default function MethodologyPage() {
               <span>{m.promise}</span>
             </div>
           )}
+          <div className="mt-7 flex flex-wrap items-center gap-3">
+            <Button asChild size="lg">
+              <Link href="/methodology/deck">
+                <Presentation className="h-4 w-4" /> Open the deck
+              </Link>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white hover:border-primary"
+            >
+              <Link href="/dashboard">
+                Open the demo <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+          </div>
         </div>
       </section>
 
