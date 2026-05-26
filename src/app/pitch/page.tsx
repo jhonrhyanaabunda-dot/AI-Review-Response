@@ -5,6 +5,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { RoiCalculator } from "@/components/pitch/roi-calculator";
 import { Faq } from "@/components/pitch/faq";
 import { config } from "@/lib/demo/config";
+import { Testimonials } from "@/components/marketing/social-proof";
 
 export const metadata = {
   title: "How it pays for itself",
@@ -237,7 +238,11 @@ export default function PitchPage() {
           </div>
         </section>
 
-        <section className="mt-16">
+        <div className="mt-16 -mx-6 md:-mx-12">
+          <Testimonials items={config.socialProof.testimonials} />
+        </div>
+
+        <section className="mt-4">
           <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
             <HelpCircle className="mr-1 inline h-3 w-3" /> Frequently asked
           </span>
@@ -267,8 +272,15 @@ export default function PitchPage() {
       </main>
 
       <footer className="mt-16 border-t bg-background">
-        <div className="mx-auto max-w-3xl px-6 py-8 text-center text-xs text-muted-foreground">
-          A3 Brands AI Review Response - prototype. Internal pitch document.
+        <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-8 text-xs text-muted-foreground md:flex-row md:justify-between">
+          <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <Link href="/pricing" className="hover:text-primary">Pricing</Link>
+            <Link href="/dashboard" className="hover:text-primary">Demo</Link>
+            <Link href="/security" className="hover:text-primary">Security</Link>
+            <Link href="/privacy" className="hover:text-primary">Privacy</Link>
+            <Link href="/terms" className="hover:text-primary">Terms</Link>
+          </div>
         </div>
       </footer>
     </div>

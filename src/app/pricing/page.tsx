@@ -118,11 +118,14 @@ export default function PricingPage() {
       </main>
 
       <footer className="border-t bg-background">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-12">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-12">
           <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
             <Link href="/dashboard" className="hover:text-primary">Demo</Link>
+            <Link href="/security" className="hover:text-primary">Security</Link>
+            <Link href="/privacy" className="hover:text-primary">Privacy</Link>
+            <Link href="/terms" className="hover:text-primary">Terms</Link>
             <a href={config.bookACallUrl} target="_blank" rel="noreferrer" className="hover:text-primary">
               {config.bookACallLabel}
             </a>

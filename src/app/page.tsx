@@ -13,6 +13,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ReviewPlatform } from "@prisma/client";
 import { config } from "@/lib/demo/config";
+import { HeroMockup } from "@/components/marketing/hero-mockup";
+import { LogoCloud, Testimonials } from "@/components/marketing/social-proof";
+import { MarketingJsonLd } from "@/components/marketing/json-ld";
 
 // Marketing landing page is fully static - no dynamic auth or fetch.
 export default function LandingPage() {
@@ -55,6 +58,7 @@ export default function LandingPage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      <MarketingJsonLd />
       {/* Nav - A3 charcoal text on white, emerald hover */}
       <header className="sticky top-0 z-10 border-b bg-background/85 backdrop-blur">
         <div className="mx-auto flex h-[68px] max-w-[1440px] items-center justify-between px-6 md:px-14">
@@ -127,6 +131,8 @@ export default function LandingPage() {
             </div>
           </div>
 
+          <HeroMockup />
+
           {/* Platforms strip */}
           <div className="mx-auto mt-16 flex max-w-3xl flex-wrap items-center justify-center gap-x-6 gap-y-3 rounded-lg border border-white/10 bg-white/5 px-6 py-4 text-xs text-white/70">
             <span className="font-bold uppercase tracking-[0.15em] text-white/90">
@@ -149,6 +155,8 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
+
+      <LogoCloud logos={config.socialProof.logos} />
 
       {/* HOW IT WORKS - light surface section */}
       <section className="bg-a3-surface">
@@ -216,6 +224,8 @@ export default function LandingPage() {
         </div>
       </section>
 
+      <Testimonials items={config.socialProof.testimonials} />
+
       {/* Footer CTA - dark band */}
       <section className="bg-a3-navy text-white">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center gap-6 px-6 py-16 text-center md:px-14">
@@ -242,12 +252,15 @@ export default function LandingPage() {
       </section>
 
       <footer className="border-t bg-background">
-        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-3 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-14">
+        <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-14">
           <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
-          <div className="flex items-center gap-5">
+          <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
             <Link href="/pricing" className="hover:text-primary">Pricing</Link>
             <Link href="/dashboard" className="hover:text-primary">Demo</Link>
+            <Link href="/security" className="hover:text-primary">Security</Link>
+            <Link href="/privacy" className="hover:text-primary">Privacy</Link>
+            <Link href="/terms" className="hover:text-primary">Terms</Link>
             <a href={config.bookACallUrl} target="_blank" rel="noreferrer" className="hover:text-primary">
               {config.bookACallLabel}
             </a>

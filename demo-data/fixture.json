@@ -85,6 +85,135 @@
         }
       ]
     },
+    "socialProof": {
+      "logos": [
+        { "name": "Smith Toyota", "wordmark": "SMITH TOYOTA" },
+        { "name": "Bayside Honda", "wordmark": "BAYSIDE HONDA" },
+        { "name": "Wilson BMW", "wordmark": "WILSON BMW" },
+        { "name": "Metro Auto Group", "wordmark": "METRO AUTO" },
+        { "name": "Pacific Lexus", "wordmark": "PACIFIC LEXUS" },
+        { "name": "Riverside Ford", "wordmark": "RIVERSIDE FORD" }
+      ],
+      "testimonials": [
+        {
+          "quote": "Cut our response time from 3 days to under 2 minutes. Our Google star average is up 0.3 in a quarter.",
+          "author": "Sam Manager",
+          "role": "GM, Smith Toyota"
+        },
+        {
+          "quote": "I used to spend Friday afternoons writing review replies. Now I spend 5 minutes approving them on my phone.",
+          "author": "Pat Admin",
+          "role": "Marketing Director, Bayside Honda"
+        },
+        {
+          "quote": "The legal-risk flagging caught two reviews that should have gone to our attorney - not the Google reply box.",
+          "author": "Wilson BMW GM",
+          "role": "Wilson BMW Group"
+        }
+      ]
+    },
+    "comparison": {
+      "$readme": "Rows are features. Each column is a vendor. true / false / string.",
+      "vendors": ["A3 Brands", "Birdeye", "Podium", "Manual / in-house"],
+      "rows": [
+        { "feature": "All 6 platforms incl. BBB", "values": [true, false, false, "varies"] },
+        { "feature": "AI-drafted replies", "values": [true, true, true, false] },
+        { "feature": "GM 1-click approval", "values": [true, false, false, "N/A"] },
+        { "feature": "Legal-risk auto-escalation", "values": [true, false, false, false] },
+        { "feature": "Per-rooftop tone", "values": [true, "limited", false, "manual"] },
+        { "feature": "Median response time", "values": ["90s", "~1 day", "~1 day", "3-7 days"] },
+        { "feature": "Per-rooftop price", "values": ["$249", "$399+", "$350+", "labor cost"] }
+      ]
+    },
+    "legal": {
+      "$readme": "Quick stub Privacy + Terms. Replace with your lawyer-reviewed copy when you have it. lastUpdated is shown on each page.",
+      "lastUpdated": "2026-05-26",
+      "privacy": [
+        {
+          "heading": "What we collect",
+          "body": "Account email, review platform credentials (encrypted at rest), and the public reviews + replies that flow through the product. We do not collect personal information from reviewers beyond what they post publicly."
+        },
+        {
+          "heading": "What we do with it",
+          "body": "We use it to draft replies on your behalf and surface them in your dashboard. We never sell data and we never share it with third parties for advertising."
+        },
+        {
+          "heading": "Where it lives",
+          "body": "Postgres in the US (AWS us-east-1). Encrypted at rest with AES-256-GCM. Backups retained for 30 days."
+        },
+        {
+          "heading": "Who can see it",
+          "body": "Members of your A3 Brands organization, with row-level scoping by dealership. A3 Brands engineering can access production for support purposes; every access is logged in the audit trail."
+        },
+        {
+          "heading": "Your rights",
+          "body": "You can export all your data at any time, and request deletion - we'll permanently remove it within 30 days. GDPR and CCPA requests honored."
+        },
+        {
+          "heading": "Contact",
+          "body": "Questions: privacy@a3brands.com (or your account manager)."
+        }
+      ],
+      "terms": [
+        {
+          "heading": "The service",
+          "body": "A3 Brands AI Review Response ingests reviews from connected platforms, drafts replies via AI, and publishes approved replies on your behalf. The service is provided as-is on a subscription basis."
+        },
+        {
+          "heading": "Your responsibilities",
+          "body": "You are responsible for the accuracy of replies you approve and for the credentials you connect. You must comply with each review platform's terms of service."
+        },
+        {
+          "heading": "AI output disclaimer",
+          "body": "AI-drafted replies are suggestions. You are the final approver. We are not liable for replies that you (or your team) approve and publish."
+        },
+        {
+          "heading": "Subscription + cancellation",
+          "body": "Plans bill monthly per rooftop. Cancel any time before the next renewal - no refunds for partial months. We'll export your data on request."
+        },
+        {
+          "heading": "Liability",
+          "body": "Our total liability is capped at the amount you've paid us in the prior 12 months. We aren't liable for indirect or consequential damages."
+        },
+        {
+          "heading": "Changes",
+          "body": "We may update these terms with 30 days' notice. Continued use after that constitutes acceptance."
+        }
+      ]
+    },
+    "security": {
+      "lastUpdated": "2026-05-26",
+      "sections": [
+        {
+          "heading": "Encryption",
+          "body": "All third-party credentials are encrypted at rest with AES-256-GCM. TLS 1.3 enforced for everything in transit."
+        },
+        {
+          "heading": "Authentication",
+          "body": "Argon2id password hashing. Optional Google SSO. JWT sessions expire after 14 days. Per-org RBAC: AGENCY_ADMIN, GM, MARKETING_DIRECTOR, RESPONSE_AGENT roles."
+        },
+        {
+          "heading": "Tenant isolation",
+          "body": "Every tenant-scoped query carries organizationId. Application-level guards plus Postgres row-level scoping prevent cross-tenant reads."
+        },
+        {
+          "heading": "Audit logging",
+          "body": "Every approve, reject, regenerate, publish, and member action is logged with actor + timestamp. Logs retained for 12 months and exportable on request."
+        },
+        {
+          "heading": "Hosting + backups",
+          "body": "Vercel (compute) + managed Postgres in AWS us-east-1. Daily encrypted backups with 30-day retention. RPO 24h / RTO 4h for the production tier."
+        },
+        {
+          "heading": "Compliance",
+          "body": "SOC2 Type II in progress (audit scheduled Q3 2026). GDPR and CCPA compliant. DPA available on request for Growth + Agency tiers."
+        },
+        {
+          "heading": "Responsible disclosure",
+          "body": "Found a vulnerability? Email security@a3brands.com. We respond within 24 hours and credit researchers in our security.md."
+        }
+      ]
+    },
     "faq": [
       {
         "q": "Does it post replies automatically?",
