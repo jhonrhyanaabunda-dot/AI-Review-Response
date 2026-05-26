@@ -1,5 +1,5 @@
 import { requirePermission } from "@/server/rbac/guard";
-import { listReviews } from "@/server/services/reviews";
+import { listReviews, reviewListStats } from "@/lib/demo/store";
 import { reviewFilterSchema } from "@/lib/validation";
 import { ReviewsClient } from "./reviews-client";
 
@@ -14,13 +14,21 @@ export default async function ReviewsPage({
   const ctx = await requirePermission("reviews:read");
   const sp = await searchParams;
   const filter = reviewFilterSchema.parse(sp);
-  const { items, nextCursor } = await listReviews(
-    ctx.organizationId,
-    filter,
-    sp.cursor,
-    50,
-    { dealershipId: ctx.dealershipId },
-  );
+  const scopedFilter = {
+    ...filter,
+    ...(ctx.dealershipId ? { dealershipId: ctx.dealershipId } : {}),
+  };
+  const [{ items, nextCursor }, stats] = await Promise.all([
+    listReviews(scopedFilter, sp.cursor, 50),
+    reviewListStats(scopedFilter),
+  ]);
 
-  return <ReviewsClient initial={items} initialNextCursor={nextCursor} filter={filter} />;
+  return (
+    <ReviewsClient
+      initial={items}
+      initialNextCursor={nextCursor}
+      filter={filter}
+      stats={stats}
+    />
+  );
 }

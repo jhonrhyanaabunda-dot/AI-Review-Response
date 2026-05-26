@@ -143,6 +143,8 @@ export async function listMembers() {
 
 // ─────────────────────────── Reviews ───────────────────────────
 
+export type ReviewSort = "newest" | "oldest" | "highest" | "lowest";
+
 export type ReviewFilter = {
   dealershipId?: string;
   platform?: ReviewPlatform;
@@ -150,6 +152,8 @@ export type ReviewFilter = {
   status?: ReviewStatus;
   rating?: number;
   q?: string;
+  days?: number | "all";
+  sort?: ReviewSort;
 };
 
 function baseActiveResponse(reviewId: string): DemoResponse | undefined {
@@ -185,13 +189,22 @@ async function activeResponse(reviewId: string): Promise<DemoResponse | undefine
   };
 }
 
-function reviewSorted() {
-  return fixture.reviews
-    .slice()
-    .sort(
-      (a, b) =>
-        b.postedAt.getTime() - a.postedAt.getTime() || b.id.localeCompare(a.id),
-    );
+function reviewSorted(sort: ReviewSort = "newest") {
+  const rows = fixture.reviews.slice();
+  switch (sort) {
+    case "oldest":
+      rows.sort((a, b) => a.postedAt.getTime() - b.postedAt.getTime() || a.id.localeCompare(b.id));
+      break;
+    case "highest":
+      rows.sort((a, b) => b.rating - a.rating || b.postedAt.getTime() - a.postedAt.getTime());
+      break;
+    case "lowest":
+      rows.sort((a, b) => a.rating - b.rating || b.postedAt.getTime() - a.postedAt.getTime());
+      break;
+    default:
+      rows.sort((a, b) => b.postedAt.getTime() - a.postedAt.getTime() || b.id.localeCompare(a.id));
+  }
+  return rows;
 }
 
 async function reviewWithOverlay(r: DemoReview, state: DemoState, prospect: Prospect | null) {
@@ -207,29 +220,34 @@ async function reviewWithOverlay(r: DemoReview, state: DemoState, prospect: Pros
   };
 }
 
+function matchesFilter(r: DemoReview, filter: ReviewFilter, state: DemoState): boolean {
+  if (filter.dealershipId && r.dealershipId !== filter.dealershipId) return false;
+  if (filter.platform && r.platform !== filter.platform) return false;
+  if (filter.sentiment && r.sentiment !== filter.sentiment) return false;
+  if (filter.rating && r.rating !== filter.rating) return false;
+  if (filter.q) {
+    const q = filter.q.toLowerCase();
+    const hay = `${r.body} ${r.title ?? ""} ${r.authorName ?? ""}`.toLowerCase();
+    if (!hay.includes(q)) return false;
+  }
+  if (filter.days && filter.days !== "all") {
+    const cutoff = Date.now() - filter.days * 24 * 60 * 60 * 1000;
+    if (r.postedAt.getTime() < cutoff) return false;
+  }
+  if (filter.status) {
+    const overlay = overlayForReview(state, r.id, {
+      responseStatus: baseActiveResponse(r.id)?.status ?? "DRAFT",
+      reviewStatus: r.status,
+    });
+    if (overlay.reviewStatus !== filter.status) return false;
+  }
+  return true;
+}
+
 export async function listReviews(filter: ReviewFilter, cursor: string | undefined, limit: number) {
   const state = await readState();
   const prospect = await activeProspect();
-  let rows = reviewSorted().filter((r) => {
-    if (filter.dealershipId && r.dealershipId !== filter.dealershipId) return false;
-    if (filter.platform && r.platform !== filter.platform) return false;
-    if (filter.sentiment && r.sentiment !== filter.sentiment) return false;
-    if (filter.rating && r.rating !== filter.rating) return false;
-    if (filter.q) {
-      const q = filter.q.toLowerCase();
-      const hay = `${r.body} ${r.title ?? ""} ${r.authorName ?? ""}`.toLowerCase();
-      if (!hay.includes(q)) return false;
-    }
-    // Status filter operates on the overlaid status.
-    if (filter.status) {
-      const overlay = overlayForReview(state, r.id, {
-        responseStatus: baseActiveResponse(r.id)?.status ?? "DRAFT",
-        reviewStatus: r.status,
-      });
-      if (overlay.reviewStatus !== filter.status) return false;
-    }
-    return true;
-  });
+  let rows = reviewSorted(filter.sort).filter((r) => matchesFilter(r, filter, state));
 
   if (cursor) {
     const idx = rows.findIndex((r) => r.id === cursor);
@@ -622,6 +640,32 @@ export function reviewExists(reviewId: string): boolean {
 
 export function findResponseById(id: string): DemoResponse | undefined {
   return fixture.responses.find((r) => r.id === id);
+}
+
+export async function reviewListStats(filter: ReviewFilter) {
+  const state = await readState();
+  const matching = fixture.reviews.filter((r) => matchesFilter(r, filter, state));
+  const total = matching.length;
+  const avgRating = total ? matching.reduce((s, r) => s + r.rating, 0) / total : 0;
+
+  let respondedCount = 0;
+  let pendingCount = 0;
+  for (const r of matching) {
+    const overlay = overlayForReview(state, r.id, {
+      responseStatus: baseActiveResponse(r.id)?.status ?? "DRAFT",
+      reviewStatus: r.status,
+    });
+    if (overlay.reviewStatus === "RESPONDED") respondedCount += 1;
+    if (overlay.responseStatus === "PENDING_APPROVAL") pendingCount += 1;
+  }
+
+  return {
+    total,
+    avgRating,
+    respondedCount,
+    pendingCount,
+    pendingRatio: total ? pendingCount / total : 0,
+  };
 }
 
 export function getReviewBodyForAi(reviewId: string): {

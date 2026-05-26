@@ -8,7 +8,9 @@ export const paginationSchema = z.object({
 });
 
 export const reviewFilterSchema = z.object({
-  dealershipId: cuid.optional(),
+  // Accept arbitrary string IDs - the demo store uses short slugs like
+  // "d-smith" rather than CUIDs, so the stricter `cuid` shape would reject them.
+  dealershipId: z.string().min(1).max(60).optional(),
   platform: z
     .enum(["GOOGLE", "YELP", "DEALERRATER", "CARS_DOT_COM", "FACEBOOK", "BBB"])
     .optional(),
@@ -20,6 +22,11 @@ export const reviewFilterSchema = z.object({
     .optional(),
   rating: z.coerce.number().int().min(1).max(5).optional(),
   q: z.string().trim().max(200).optional(),
+  // Last-N-days window. "all" or omitted = no filter.
+  days: z
+    .union([z.literal("all"), z.coerce.number().int().min(1).max(365)])
+    .optional(),
+  sort: z.enum(["newest", "oldest", "highest", "lowest"]).default("newest"),
 });
 
 export const responseDecisionSchema = z.object({
