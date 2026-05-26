@@ -650,6 +650,13 @@ export async function reviewListStats(filter: ReviewFilter) {
 
   let respondedCount = 0;
   let pendingCount = 0;
+  const ratingDistribution: Record<1 | 2 | 3 | 4 | 5, number> = {
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+  };
   for (const r of matching) {
     const overlay = overlayForReview(state, r.id, {
       responseStatus: baseActiveResponse(r.id)?.status ?? "DRAFT",
@@ -657,6 +664,8 @@ export async function reviewListStats(filter: ReviewFilter) {
     });
     if (overlay.reviewStatus === "RESPONDED") respondedCount += 1;
     if (overlay.responseStatus === "PENDING_APPROVAL") pendingCount += 1;
+    const bucket = Math.max(1, Math.min(5, r.rating)) as 1 | 2 | 3 | 4 | 5;
+    ratingDistribution[bucket] += 1;
   }
 
   return {
@@ -665,6 +674,7 @@ export async function reviewListStats(filter: ReviewFilter) {
     respondedCount,
     pendingCount,
     pendingRatio: total ? pendingCount / total : 0,
+    ratingDistribution,
   };
 }
 

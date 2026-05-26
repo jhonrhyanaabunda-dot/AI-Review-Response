@@ -23,7 +23,14 @@ import {
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
-import { ReviewRow, type ReviewRowData } from "@/components/reviews/review-row";
+import type { ReviewRowData } from "@/components/reviews/review-row";
+import Link from "next/link";
+import { formatDistanceToNow, format, isToday, isYesterday, differenceInCalendarDays } from "date-fns";
+import { ChevronRight, ChevronDown, Sparkles } from "lucide-react";
+import { RatingStars } from "@/components/reviews/rating-stars";
+import { PlatformIcon } from "@/components/reviews/platform-icon";
+import { SentimentBadge } from "@/components/reviews/sentiment-badge";
+import { Badge } from "@/components/ui/badge";
 import { useApi } from "@/hooks/use-api";
 import { cn } from "@/lib/utils/cn";
 import type { ReviewFilter } from "@/lib/validation";
@@ -79,7 +86,39 @@ type Stats = {
   respondedCount: number;
   pendingCount: number;
   pendingRatio: number;
+  ratingDistribution: Record<1 | 2 | 3 | 4 | 5, number>;
 };
+
+function RatingDistributionBars({
+  distribution,
+}: {
+  distribution: Stats["ratingDistribution"];
+}) {
+  const max = Math.max(...Object.values(distribution), 1);
+  return (
+    <div className="space-y-1.5">
+      {([5, 4, 3, 2, 1] as const).map((stars) => {
+        const count = distribution[stars];
+        const pct = (count / max) * 100;
+        const color =
+          stars >= 4 ? "bg-success" : stars === 3 ? "bg-warning" : "bg-destructive";
+        return (
+          <div key={stars} className="flex items-center gap-2 text-[11px]">
+            <span className="w-3 text-right font-medium text-muted-foreground">{stars}</span>
+            <Star className="h-3 w-3 fill-warning text-warning" />
+            <div className="h-2 flex-1 overflow-hidden rounded-full bg-muted">
+              <div
+                className={cn("h-full transition-all", color)}
+                style={{ width: `${pct}%` }}
+              />
+            </div>
+            <span className="w-7 text-right tabular-nums text-muted-foreground">{count}</span>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
 
 function StatCard({
   label,
@@ -128,6 +167,9 @@ export function ReviewsClient({
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [q, setQ] = useState(filter.q ?? "");
   const [hidden, setHidden] = useState<Set<string>>(new Set());
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [groupByDate, setGroupByDate] = useState(true);
+  const [expanded, setExpanded] = useState<Set<string>>(new Set());
 
   // Debounced search so the URL doesn't update on every keystroke.
   useEffect(() => {
@@ -321,37 +363,45 @@ export function ReviewsClient({
       </div>
 
       {/* Stats summary */}
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <StatCard
-          label="Total"
-          value={stats.total.toLocaleString()}
-          Icon={MessageSquare}
-          sub={activeFilterCount > 0 ? "matching filters" : "in this view"}
-        />
-        <StatCard
-          label="Avg rating"
-          value={stats.avgRating.toFixed(2)}
-          accent="text-warning"
-          Icon={Star}
-        />
-        <StatCard
-          label="Responded"
-          value={`${stats.respondedCount} (${
-            stats.total ? Math.round((stats.respondedCount / stats.total) * 100) : 0
-          }%)`}
-          accent="text-success"
-          Icon={CheckCircle2}
-        />
-        <StatCard
-          label="Pending approval"
-          value={stats.pendingCount.toString()}
-          Icon={Clock}
-          sub={
-            stats.pendingRatio > 0
-              ? `${Math.round(stats.pendingRatio * 100)}% of total`
-              : undefined
-          }
-        />
+      <div className="grid gap-3 lg:grid-cols-[2fr_1fr]">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          <StatCard
+            label="Total"
+            value={stats.total.toLocaleString()}
+            Icon={MessageSquare}
+            sub={activeFilterCount > 0 ? "matching filters" : "in this view"}
+          />
+          <StatCard
+            label="Avg rating"
+            value={stats.avgRating.toFixed(2)}
+            accent="text-warning"
+            Icon={Star}
+          />
+          <StatCard
+            label="Responded"
+            value={`${stats.respondedCount} (${
+              stats.total ? Math.round((stats.respondedCount / stats.total) * 100) : 0
+            }%)`}
+            accent="text-success"
+            Icon={CheckCircle2}
+          />
+          <StatCard
+            label="Pending approval"
+            value={stats.pendingCount.toString()}
+            Icon={Clock}
+            sub={
+              stats.pendingRatio > 0
+                ? `${Math.round(stats.pendingRatio * 100)}% of total`
+                : undefined
+            }
+          />
+        </div>
+        <div className="rounded-lg border bg-card p-4">
+          <div className="mb-3 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            Rating distribution
+          </div>
+          <RatingDistributionBars distribution={stats.ratingDistribution} />
+        </div>
       </div>
 
       {/* Saved-view chips */}
@@ -381,8 +431,8 @@ export function ReviewsClient({
         )}
       </div>
 
-      {/* Filter bar */}
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Filter bar (sticky) */}
+      <div className="sticky top-0 z-10 -mx-4 flex flex-wrap items-center gap-2 border-b bg-background/95 px-4 py-2 backdrop-blur md:-mx-6 md:px-6">
         <div className="relative">
           <Search className="absolute left-2 top-2.5 h-4 w-4 text-muted-foreground" />
           <Input
@@ -486,6 +536,37 @@ export function ReviewsClient({
             ))}
           </SelectContent>
         </Select>
+
+        {/* View options */}
+        <div className="ml-auto flex items-center gap-1 rounded-md border bg-card p-0.5 text-xs">
+          <button
+            type="button"
+            onClick={() => setDensity("comfortable")}
+            data-active={density === "comfortable"}
+            className="rounded-sm px-2 py-1 text-muted-foreground hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+            title="Comfortable density"
+          >
+            Cozy
+          </button>
+          <button
+            type="button"
+            onClick={() => setDensity("compact")}
+            data-active={density === "compact"}
+            className="rounded-sm px-2 py-1 text-muted-foreground hover:text-foreground data-[active=true]:bg-foreground data-[active=true]:text-background"
+            title="Compact density"
+          >
+            Compact
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={() => setGroupByDate((g) => !g)}
+          data-active={groupByDate}
+          className="rounded-md border bg-card px-2 py-1 text-xs text-muted-foreground hover:text-foreground data-[active=true]:border-primary/40 data-[active=true]:text-foreground"
+          title="Toggle date grouping"
+        >
+          Group by date
+        </button>
       </div>
 
       {/* Selection toolbar (sticky-ish) */}
@@ -518,31 +599,64 @@ export function ReviewsClient({
         </div>
       )}
 
-      <div className="overflow-hidden rounded-lg border bg-card">
-        {visible.length === 0 ? (
-          <div className="p-12 text-center text-sm text-muted-foreground">
-            {initial.length === 0
-              ? "No reviews match these filters."
-              : "All visible reviews handled."}
-          </div>
-        ) : (
-          visible.map((r) => (
-            <ReviewRow
+      {visible.length === 0 ? (
+        <div className="rounded-lg border bg-card p-12 text-center text-sm text-muted-foreground">
+          {initial.length === 0
+            ? "No reviews match these filters."
+            : "All visible reviews handled."}
+        </div>
+      ) : groupByDate ? (
+        <ReviewListGrouped
+          rows={visible}
+          density={density}
+          selected={selected}
+          expanded={expanded}
+          onToggleSelect={(id, on) =>
+            setSelected((s) => {
+              const next = new Set(s);
+              if (on) next.add(id);
+              else next.delete(id);
+              return next;
+            })
+          }
+          onToggleExpand={(id) =>
+            setExpanded((e) => {
+              const next = new Set(e);
+              if (next.has(id)) next.delete(id);
+              else next.add(id);
+              return next;
+            })
+          }
+        />
+      ) : (
+        <div className="overflow-hidden rounded-lg border bg-card">
+          {visible.map((r) => (
+            <ReviewListRow
               key={r.id}
               review={r}
+              density={density}
               selected={selected.has(r.id)}
-              onSelectedChange={(on) => {
+              expanded={expanded.has(r.id)}
+              onSelectedChange={(on) =>
                 setSelected((s) => {
                   const next = new Set(s);
                   if (on) next.add(r.id);
                   else next.delete(r.id);
                   return next;
-                });
-              }}
+                })
+              }
+              onToggleExpand={() =>
+                setExpanded((e) => {
+                  const next = new Set(e);
+                  if (next.has(r.id)) next.delete(r.id);
+                  else next.add(r.id);
+                  return next;
+                })
+              }
             />
-          ))
-        )}
-      </div>
+          ))}
+        </div>
+      )}
 
       {initialNextCursor && (
         <div className="flex justify-center">
@@ -552,6 +666,193 @@ export function ReviewsClient({
           >
             Load more
           </Button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// ─────────────────────────── Grouping + rows ───────────────────────────
+
+type DateBucket = "Today" | "Yesterday" | "This week" | "Earlier";
+
+function bucketFor(date: Date): DateBucket {
+  if (isToday(date)) return "Today";
+  if (isYesterday(date)) return "Yesterday";
+  if (differenceInCalendarDays(new Date(), date) <= 7) return "This week";
+  return "Earlier";
+}
+
+const BUCKET_ORDER: DateBucket[] = ["Today", "Yesterday", "This week", "Earlier"];
+
+function ReviewListGrouped({
+  rows,
+  density,
+  selected,
+  expanded,
+  onToggleSelect,
+  onToggleExpand,
+}: {
+  rows: ReviewRowData[];
+  density: "comfortable" | "compact";
+  selected: Set<string>;
+  expanded: Set<string>;
+  onToggleSelect: (id: string, on: boolean) => void;
+  onToggleExpand: (id: string) => void;
+}) {
+  const groups = new Map<DateBucket, ReviewRowData[]>();
+  for (const r of rows) {
+    const date = r.postedAt instanceof Date ? r.postedAt : new Date(r.postedAt);
+    const bucket = bucketFor(date);
+    if (!groups.has(bucket)) groups.set(bucket, []);
+    groups.get(bucket)!.push(r);
+  }
+
+  return (
+    <div className="space-y-6">
+      {BUCKET_ORDER.filter((b) => groups.has(b)).map((bucket) => {
+        const items = groups.get(bucket)!;
+        return (
+          <section key={bucket}>
+            <div className="mb-2 flex items-baseline justify-between">
+              <h3 className="text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+                {bucket}
+              </h3>
+              <span className="text-[10px] text-muted-foreground">
+                {items.length} review{items.length === 1 ? "" : "s"}
+              </span>
+            </div>
+            <div className="overflow-hidden rounded-lg border bg-card">
+              {items.map((r) => (
+                <ReviewListRow
+                  key={r.id}
+                  review={r}
+                  density={density}
+                  selected={selected.has(r.id)}
+                  expanded={expanded.has(r.id)}
+                  onSelectedChange={(on) => onToggleSelect(r.id, on)}
+                  onToggleExpand={() => onToggleExpand(r.id)}
+                />
+              ))}
+            </div>
+          </section>
+        );
+      })}
+    </div>
+  );
+}
+
+const STATUS_VARIANT: Record<
+  string,
+  "default" | "muted" | "warning" | "success" | "destructive"
+> = {
+  NEW: "default",
+  IN_PROGRESS: "warning",
+  RESPONDED: "success",
+  IGNORED: "muted",
+  ESCALATED: "destructive",
+};
+
+function ReviewListRow({
+  review,
+  density,
+  selected,
+  expanded,
+  onSelectedChange,
+  onToggleExpand,
+}: {
+  review: ReviewRowData;
+  density: "comfortable" | "compact";
+  selected: boolean;
+  expanded: boolean;
+  onSelectedChange: (on: boolean) => void;
+  onToggleExpand: () => void;
+}) {
+  const date = review.postedAt instanceof Date ? review.postedAt : new Date(review.postedAt);
+  const resp = review.responses[0];
+  const respText = resp?.finalBody ?? resp?.draftBody;
+  const canExpand = !!respText;
+  const compact = density === "compact";
+
+  return (
+    <div
+      className={cn(
+        "group block border-b last:border-b-0 transition-colors",
+        selected ? "bg-muted/40" : "hover:bg-muted/30",
+      )}
+    >
+      <div className={cn("flex items-start gap-3", compact ? "px-3 py-2" : "px-4 py-3")}>
+        <div onClick={(e) => e.stopPropagation()} className="pt-0.5">
+          <Checkbox checked={selected} onCheckedChange={(v) => onSelectedChange(!!v)} />
+        </div>
+        <Link href={`/reviews/${review.id}`} className="min-w-0 flex-1">
+          <div className="flex flex-wrap items-center gap-x-2 gap-y-0.5">
+            <PlatformIcon platform={review.platform} />
+            <RatingStars value={review.rating} />
+            <span className={cn("font-medium", compact ? "text-xs" : "text-sm")}>
+              {review.authorName ?? "Anonymous"}
+            </span>
+            <span className="text-xs text-muted-foreground">· {review.dealership.name}</span>
+            <span
+              className="ml-auto text-xs text-muted-foreground"
+              title={format(date, "PPpp")}
+            >
+              {formatDistanceToNow(date, { addSuffix: true })}
+            </span>
+          </div>
+          <p
+            className={cn(
+              "mt-1 text-muted-foreground",
+              compact ? "line-clamp-1 text-xs" : "line-clamp-2 text-sm",
+            )}
+          >
+            {review.body}
+          </p>
+          {!compact && (
+            <div className="mt-2 flex flex-wrap items-center gap-2">
+              <SentimentBadge value={review.sentiment} />
+              <Badge variant={STATUS_VARIANT[review.status] ?? "default"} className="capitalize">
+                {review.status.replace("_", " ").toLowerCase()}
+              </Badge>
+              {resp && (
+                <Badge variant="outline" className="capitalize">
+                  {resp.status.replace("_", " ").toLowerCase()}
+                </Badge>
+              )}
+            </div>
+          )}
+        </Link>
+        <div className="flex items-center gap-1">
+          {canExpand && (
+            <button
+              type="button"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                onToggleExpand();
+              }}
+              className="rounded-md p-1 text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+              title={expanded ? "Hide AI reply" : "Show AI reply"}
+            >
+              {expanded ? (
+                <ChevronDown className="h-4 w-4" />
+              ) : (
+                <Sparkles className="h-4 w-4" />
+              )}
+            </button>
+          )}
+          <ChevronRight className="h-4 w-4 text-muted-foreground opacity-0 transition-opacity group-hover:opacity-100" />
+        </div>
+      </div>
+      {canExpand && expanded && (
+        <div className="border-t bg-muted/30 px-4 py-3">
+          <div className="mb-1.5 flex items-center gap-2 text-[10px] font-bold uppercase tracking-[0.18em] text-muted-foreground">
+            <Sparkles className="h-3 w-3 text-primary" />
+            {resp!.status === "PUBLISHED" ? "Published reply" : "AI draft"}
+          </div>
+          <p className="whitespace-pre-wrap rounded-md border bg-background p-3 text-sm leading-relaxed">
+            {respText}
+          </p>
         </div>
       )}
     </div>
