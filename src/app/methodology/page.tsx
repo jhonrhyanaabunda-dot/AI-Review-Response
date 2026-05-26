@@ -10,6 +10,7 @@ import {
   Inbox,
   X,
   Presentation,
+  Download,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -57,6 +58,16 @@ export default function MethodologyPage() {
           )}
           <div className="mt-7 flex flex-wrap items-center gap-3">
             <Button asChild size="lg">
+              <a href="/api/methodology/deck.pptx" download>
+                <Download className="h-4 w-4" /> Download PowerPoint
+              </a>
+            </Button>
+            <Button
+              asChild
+              size="lg"
+              variant="outline"
+              className="border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white hover:border-primary"
+            >
               <Link href="/methodology/deck">
                 <Presentation className="h-4 w-4" /> Open the deck
               </Link>
@@ -64,8 +75,8 @@ export default function MethodologyPage() {
             <Button
               asChild
               size="lg"
-              variant="outline"
-              className="border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white hover:border-primary"
+              variant="ghost"
+              className="text-white/80 hover:bg-white/10 hover:text-white"
             >
               <Link href="/dashboard">
                 Open the demo <ArrowRight className="h-4 w-4" />
