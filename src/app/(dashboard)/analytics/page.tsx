@@ -10,6 +10,7 @@ import { TrendChart } from "@/components/analytics/trend-chart";
 import { DealershipTable } from "@/components/analytics/dealership-table";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Analytics" };
 
 export default async function AnalyticsPage() {
   const ctx = await requirePermission("analytics:read");

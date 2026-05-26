@@ -2,7 +2,7 @@
 import { useTheme } from "next-themes";
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { Moon, Sun, LogOut, User as UserIcon, RotateCcw } from "lucide-react";
+import { Moon, Sun, RotateCcw, CalendarDays, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,10 +18,18 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { MobileNav } from "./mobile-nav";
 
-export function Topbar({ user, orgName }: {
+export function Topbar({
+  user,
+  orgName,
+  bookACallUrl,
+  bookACallLabel,
+}: {
   user: { name?: string | null; email?: string | null; image?: string | null };
   orgName: string;
+  bookACallUrl: string;
+  bookACallLabel: string;
 }) {
   const { theme, setTheme } = useTheme();
   const router = useRouter();
@@ -41,20 +49,32 @@ export function Topbar({ user, orgName }: {
   };
 
   return (
-    <header className="flex h-[68px] items-center justify-between border-b bg-background/85 px-6 backdrop-blur">
-      <div className="flex items-center gap-3">
-        <h1 className="text-sm font-semibold tracking-tight">{orgName}</h1>
+    <header className="flex h-[68px] items-center justify-between border-b bg-background/85 px-4 backdrop-blur md:px-6">
+      <div className="flex items-center gap-2 md:gap-3">
+        <MobileNav />
+        <h1 className="truncate text-sm font-semibold tracking-tight">{orgName}</h1>
         <span className="hidden rounded-sm bg-primary/10 px-2 py-0.5 text-[10px] font-bold uppercase tracking-[0.15em] text-primary sm:inline">
           Demo
         </span>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
+        <Button
+          asChild
+          size="sm"
+          variant="outline"
+          className="hidden text-xs sm:inline-flex"
+        >
+          <a href={bookACallUrl} target="_blank" rel="noreferrer">
+            <CalendarDays className="h-3.5 w-3.5" />
+            {bookACallLabel}
+          </a>
+        </Button>
         <Button
           variant="ghost"
           size="sm"
           onClick={resetDemo}
           disabled={resetting}
-          className="hidden text-xs text-muted-foreground hover:text-foreground sm:inline-flex"
+          className="hidden text-xs text-muted-foreground hover:text-foreground md:inline-flex"
         >
           <RotateCcw className={`h-3.5 w-3.5 ${resetting ? "animate-spin" : ""}`} />
           Reset demo
@@ -80,14 +100,15 @@ export function Topbar({ user, orgName }: {
           <DropdownMenuContent align="end" className="w-56">
             <DropdownMenuLabel>{user.name ?? user.email}</DropdownMenuLabel>
             <DropdownMenuSeparator />
-            <DropdownMenuItem disabled>
-              <UserIcon className="h-4 w-4" /> Profile
+            <DropdownMenuItem onSelect={() => window.open(bookACallUrl, "_blank")}>
+              <CalendarDays className="h-4 w-4" /> {bookACallLabel}
             </DropdownMenuItem>
             <DropdownMenuItem onSelect={resetDemo}>
               <RotateCcw className="h-4 w-4" /> Reset demo
             </DropdownMenuItem>
-            <DropdownMenuItem disabled>
-              <LogOut className="h-4 w-4" /> Sign out
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onSelect={() => window.open("https://a3brands.com", "_blank")}>
+              <ExternalLink className="h-4 w-4" /> A3 Brands
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

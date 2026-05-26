@@ -4,6 +4,7 @@ import { reviewFilterSchema } from "@/lib/validation";
 import { ReviewsClient } from "./reviews-client";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Reviews" };
 
 export default async function ReviewsPage({
   searchParams,

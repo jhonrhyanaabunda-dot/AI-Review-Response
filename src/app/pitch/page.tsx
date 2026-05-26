@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 
 export const metadata = {
-  title: "A3 Brands AI Review Response - Pitch",
+  title: "How it pays for itself",
   description:
     "Why dealership clients need automated review response - the math, the moat, and the rollout plan.",
 };

@@ -6,6 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Dealerships" };
 
 export default async function DealershipsPage() {
   const ctx = await requirePermission("dealerships:read");

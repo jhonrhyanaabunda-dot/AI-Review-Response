@@ -16,6 +16,7 @@ Optional env vars (set in Project Settings → Environment Variables):
 | Variable | What it does |
 | -------- | ------------ |
 | `ANTHROPIC_API_KEY` | Powers the **Regenerate** button with Claude Haiku (~$0.001 / regen). If unset, the demo falls back to canned variants. |
+| `NEXT_PUBLIC_SITE_URL` | Override the canonical URL used for OG/social previews. Defaults to your Vercel production URL. |
 
 ## What's in the demo
 
@@ -50,16 +51,18 @@ your-deploy.vercel.app/p/wilson-bmw
 
 ## Editing the demo content
 
-Most demo content lives in editable files at the repo root:
+Most demo content lives in editable JSON / TSX at the repo root - you can
+edit it via the GitHub web UI (pencil icon on github.com) without ever
+opening a terminal. Vercel auto-deploys every push to `main` (~30s, no env
+vars touched).
 
-| What | File | Edit via |
-| ---- | ---- | -------- |
-| Org name, dealerships, sample reviews | [`demo-data/fixture.json`](demo-data/fixture.json) | GitHub web editor (just commit) |
-| Per-prospect overlays | [`prospects/*.json`](prospects/) | GitHub web editor |
-| Marketing copy | [`src/app/page.tsx`](src/app/page.tsx) | GitHub web editor |
-| Pitch / ROI copy | [`src/app/pitch/page.tsx`](src/app/pitch/page.tsx) | GitHub web editor |
-
-Vercel auto-deploys every push to `main` (~30 seconds).
+| What | File | Notes |
+| ---- | ---- | ----- |
+| Org name, dealerships, sample reviews | [`demo-data/fixture.json`](demo-data/fixture.json) | Bulk demo content. |
+| Book-a-call URL, support email, demo banner copy | [`demo-data/fixture.json`](demo-data/fixture.json) → `config` | Soft settings. |
+| Per-prospect overlays | [`prospects/*.json`](prospects/) + one line in [`src/lib/demo/prospects.ts`](src/lib/demo/prospects.ts) | Send `your-deploy.vercel.app/p/<slug>` to a prospect. |
+| Marketing landing copy | [`src/app/page.tsx`](src/app/page.tsx) | |
+| Pitch / ROI copy | [`src/app/pitch/page.tsx`](src/app/pitch/page.tsx) | |
 
 ## How the demo persists state
 

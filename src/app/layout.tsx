@@ -1,6 +1,7 @@
 import "./globals.css";
 import type { Metadata } from "next";
 import { Sora } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import { ThemeProvider } from "@/components/layout/theme-provider";
 import { Toaster } from "sonner";
 
@@ -14,7 +15,16 @@ const sora = Sora({
   display: "swap",
 });
 
+// On Vercel, VERCEL_PROJECT_PRODUCTION_URL is the canonical https hostname.
+// Locally we fall back to localhost so OG previews still resolve absolutely.
+const SITE_URL =
+  process.env.NEXT_PUBLIC_SITE_URL ??
+  (process.env.VERCEL_PROJECT_PRODUCTION_URL
+    ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}`
+    : "http://localhost:3000");
+
 export const metadata: Metadata = {
+  metadataBase: new URL(SITE_URL),
   title: {
     default: "A3 Brands - AI Review Response",
     template: "%s · A3 Brands",
@@ -43,6 +53,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
           {children}
           <Toaster richColors closeButton position="bottom-right" />
+          <Analytics />
         </ThemeProvider>
       </body>
     </html>

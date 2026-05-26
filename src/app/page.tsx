@@ -12,6 +12,7 @@ import { PlatformIcon } from "@/components/reviews/platform-icon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ReviewPlatform } from "@prisma/client";
+import { config } from "@/lib/demo/config";
 
 // Marketing landing page is fully static - no dynamic auth or fetch.
 export default function LandingPage() {
@@ -72,8 +73,13 @@ export default function LandingPage() {
             <Link href="/pitch" className="hidden text-sm font-normal text-foreground/80 transition-colors hover:text-primary sm:inline">
               Why A3
             </Link>
+            <Button asChild variant="ghost" className="hidden sm:inline-flex">
+              <a href={config.bookACallUrl} target="_blank" rel="noreferrer">
+                {config.bookACallLabel}
+              </a>
+            </Button>
             <Button asChild>
-              <Link href="/dashboard">Sign in</Link>
+              <Link href="/dashboard">Open the demo</Link>
             </Button>
           </nav>
         </div>
@@ -217,20 +223,30 @@ export default function LandingPage() {
             The demo runs against a seeded A3 Brands console with two dealerships and
             48 reviews across all six platforms.
           </p>
-          <Button asChild size="lg">
-            <Link href="/dashboard">
-              Open the demo <ArrowRight className="h-4 w-4" />
-            </Link>
-          </Button>
+          <div className="flex flex-wrap items-center justify-center gap-3">
+            <Button asChild size="lg">
+              <Link href="/dashboard">
+                Open the demo <ArrowRight className="h-4 w-4" />
+              </Link>
+            </Button>
+            <Button asChild size="lg" variant="outline" className="border-white/25 bg-white/5 text-white hover:bg-white/10 hover:text-white hover:border-primary">
+              <a href={config.bookACallUrl} target="_blank" rel="noreferrer">
+                {config.bookACallLabel}
+              </a>
+            </Button>
+          </div>
         </div>
       </section>
 
       <footer className="border-t bg-background">
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-3 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-14">
-          <div>© {new Date().getFullYear()} A3 Brands. AI Review Response - prototype.</div>
+          <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
           <div className="flex items-center gap-5">
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
-            <Link href="/dashboard" className="hover:text-primary">Sign in</Link>
+            <Link href="/dashboard" className="hover:text-primary">Demo</Link>
+            <a href={config.bookACallUrl} target="_blank" rel="noreferrer" className="hover:text-primary">
+              {config.bookACallLabel}
+            </a>
           </div>
         </div>
       </footer>

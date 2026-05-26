@@ -51,6 +51,8 @@ function confidenceTier(c: number) {
   return { label: "Low", variant: "destructive" as const };
 }
 
+type ConfidenceFilter = "all" | "high" | "mid" | "low";
+
 export function InboxClient({
   items,
   published,
@@ -63,6 +65,7 @@ export function InboxClient({
   const [, startTransition] = useTransition();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, setPending] = useState<Record<string, boolean>>({});
+  const [confidence, setConfidence] = useState<ConfidenceFilter>("all");
 
   const toggleSelect = (id: string, on: boolean) => {
     setSelected((s) => {
@@ -157,26 +160,65 @@ export function InboxClient({
 
       <PublishedStrip items={published} />
 
-      {items.length === 0 ? (
-        <Card>
-          <CardContent className="p-12 text-center text-sm text-muted-foreground">
-            Nothing waiting. New reviews surface here as soon as AI drafts a response.
-          </CardContent>
-        </Card>
-      ) : (
-        <div className="space-y-3">
-          {items.map((r) => (
-            <InboxCard
-              key={r.id}
-              item={r}
-              selected={selected.has(r.id)}
-              onSelectedChange={(on) => toggleSelect(r.id, on)}
-              onDecide={decide}
-              pending={!!pending[r.id]}
-            />
-          ))}
-        </div>
-      )}
+      <div className="flex flex-wrap items-center gap-2">
+        {(
+          [
+            { key: "all", label: `All (${items.length})`, accent: "" },
+            { key: "high", label: `High (${counts.high})`, accent: "data-[active=true]:bg-success/15 data-[active=true]:text-success" },
+            { key: "mid", label: `Medium (${counts.mid})`, accent: "data-[active=true]:bg-warning/15 data-[active=true]:text-warning" },
+            { key: "low", label: `Low (${counts.low})`, accent: "data-[active=true]:bg-destructive/15 data-[active=true]:text-destructive" },
+          ] as const
+        ).map((opt) => (
+          <button
+            key={opt.key}
+            type="button"
+            data-active={confidence === opt.key}
+            onClick={() => setConfidence(opt.key)}
+            className={cn(
+              "rounded-pill border px-3 py-1 text-xs font-medium text-muted-foreground transition-colors hover:text-foreground",
+              "data-[active=true]:border-transparent data-[active=true]:bg-foreground data-[active=true]:text-background",
+              opt.accent,
+            )}
+          >
+            {opt.label}
+          </button>
+        ))}
+      </div>
+
+      {(() => {
+        const filtered = items.filter((r) => {
+          if (confidence === "all") return true;
+          const c = r.responses[0]?.confidence ?? 0;
+          if (confidence === "high") return c >= 0.8;
+          if (confidence === "mid") return c >= 0.5 && c < 0.8;
+          return c < 0.5;
+        });
+        if (filtered.length === 0) {
+          return (
+            <Card>
+              <CardContent className="p-12 text-center text-sm text-muted-foreground">
+                {items.length === 0
+                  ? "Nothing waiting. New reviews surface here as soon as AI drafts a response."
+                  : "No reviews match this confidence filter."}
+              </CardContent>
+            </Card>
+          );
+        }
+        return (
+          <div className="space-y-3">
+            {filtered.map((r) => (
+              <InboxCard
+                key={r.id}
+                item={r}
+                selected={selected.has(r.id)}
+                onSelectedChange={(on) => toggleSelect(r.id, on)}
+                onDecide={decide}
+                pending={!!pending[r.id]}
+              />
+            ))}
+          </div>
+        );
+      })()}
     </div>
   );
 }

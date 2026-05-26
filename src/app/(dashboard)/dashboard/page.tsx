@@ -13,6 +13,7 @@ import { SentimentDonut } from "@/components/analytics/sentiment-donut";
 import { PlatformBars } from "@/components/analytics/platform-bars";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Dashboard" };
 
 export default async function DashboardPage() {
   const ctx = await requirePermission("analytics:read");

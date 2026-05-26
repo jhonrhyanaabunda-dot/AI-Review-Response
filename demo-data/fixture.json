@@ -2,8 +2,9 @@
   "$readme": [
     "EDIT THIS FILE TO CHANGE THE DEMO.",
     "GitHub web editor works fine - no rebuild reasoning needed.",
-    "Vercel will redeploy automatically on push (~30s).",
+    "Vercel will redeploy automatically on push (~30s). No env vars needed.",
     "",
+    "config: soft settings (CTAs, banner copy) you can edit any time.",
     "org: the agency that owns the dashboard.",
     "dealerships: rooftops shown in the demo. Add or rename freely.",
     "samples: review templates. Bucketed by sentiment. Add as many as you like.",
@@ -14,6 +15,15 @@
     "JSON file in /prospects/<slug>.json and import it in",
     "src/lib/demo/prospects.ts."
   ],
+  "config": {
+    "bookACallUrl": "mailto:a3brandsllc@gmail.com?subject=A3%20Brands%20AI%20Review%20Response%20demo",
+    "bookACallLabel": "Book a call",
+    "supportEmail": "a3brandsllc@gmail.com",
+    "demoBanner": {
+      "enabled": true,
+      "text": "You're in a live demo. Approve a review in the inbox - your changes persist for 7 days. Use \"Reset demo\" in the top right any time."
+    }
+  },
   "org": {
     "name": "A3 Brands",
     "slug": "a3-brands",

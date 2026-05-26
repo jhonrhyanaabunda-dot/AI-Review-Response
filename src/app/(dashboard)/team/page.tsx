@@ -4,6 +4,7 @@ import { Badge } from "@/components/ui/badge";
 import { listMembers } from "@/lib/demo/store";
 
 export const dynamic = "force-dynamic";
+export const metadata = { title: "Team" };
 
 export default async function TeamPage() {
   const members = await listMembers();
