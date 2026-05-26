@@ -1,7 +1,10 @@
 import Link from "next/link";
-import { Sparkles, Clock, Star, DollarSign, ShieldCheck, ArrowRight, Check } from "lucide-react";
+import { Sparkles, Clock, Star, DollarSign, ShieldCheck, ArrowRight, Check, HelpCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { RoiCalculator } from "@/components/pitch/roi-calculator";
+import { Faq } from "@/components/pitch/faq";
+import { config } from "@/lib/demo/config";
 
 export const metadata = {
   title: "How it pays for itself",
@@ -218,6 +221,34 @@ export default function PitchPage() {
           </ol>
         </section>
 
+        <section className="mt-16">
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+            Your numbers
+          </span>
+          <h2 className="mt-2 text-2xl font-black tracking-tight md:text-display-3">
+            Run the math for your dealership.
+          </h2>
+          <p className="mt-2 text-sm text-muted-foreground">
+            We&apos;ll keep saying &quot;1-click GM approval&quot; - here&apos;s what that
+            actually saves you.
+          </p>
+          <div className="mt-6">
+            <RoiCalculator defaults={config.roi.defaults} />
+          </div>
+        </section>
+
+        <section className="mt-16">
+          <span className="text-[11px] font-bold uppercase tracking-[0.2em] text-primary">
+            <HelpCircle className="mr-1 inline h-3 w-3" /> Frequently asked
+          </span>
+          <h2 className="mt-2 text-2xl font-black tracking-tight md:text-display-3">
+            What dealerships ask before they sign.
+          </h2>
+          <div className="mt-6">
+            <Faq items={config.faq} />
+          </div>
+        </section>
+
         <div className="mt-16 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">
             <Link href="/dashboard">
@@ -225,7 +256,12 @@ export default function PitchPage() {
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg">
-            <Link href="/">Back to overview</Link>
+            <Link href="/pricing">See pricing</Link>
+          </Button>
+          <Button asChild variant="ghost" size="lg">
+            <a href={config.bookACallUrl} target="_blank" rel="noreferrer">
+              {config.bookACallLabel}
+            </a>
           </Button>
         </div>
       </main>

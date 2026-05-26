@@ -60,9 +60,12 @@ vars touched).
 | ---- | ---- | ----- |
 | Org name, dealerships, sample reviews | [`demo-data/fixture.json`](demo-data/fixture.json) | Bulk demo content. |
 | Book-a-call URL, support email, demo banner copy | [`demo-data/fixture.json`](demo-data/fixture.json) → `config` | Soft settings. |
+| Pricing tiers (Starter / Growth / Agency) | [`demo-data/fixture.json`](demo-data/fixture.json) → `config.pricing.tiers` | Renders at `/pricing`. |
+| FAQ on the pitch page | [`demo-data/fixture.json`](demo-data/fixture.json) → `config.faq` | Renders at the bottom of `/pitch`. |
+| ROI calculator defaults | [`demo-data/fixture.json`](demo-data/fixture.json) → `config.roi.defaults` | Sliders on `/pitch`. |
 | Per-prospect overlays | [`prospects/*.json`](prospects/) + one line in [`src/lib/demo/prospects.ts`](src/lib/demo/prospects.ts) | Send `your-deploy.vercel.app/p/<slug>` to a prospect. |
 | Marketing landing copy | [`src/app/page.tsx`](src/app/page.tsx) | |
-| Pitch / ROI copy | [`src/app/pitch/page.tsx`](src/app/pitch/page.tsx) | |
+| Pitch sections + headlines | [`src/app/pitch/page.tsx`](src/app/pitch/page.tsx) | |
 
 ## How the demo persists state
 

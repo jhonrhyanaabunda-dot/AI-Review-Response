@@ -22,7 +22,91 @@
     "demoBanner": {
       "enabled": true,
       "text": "You're in a live demo. Approve a review in the inbox - your changes persist for 7 days. Use \"Reset demo\" in the top right any time."
-    }
+    },
+    "roi": {
+      "defaults": {
+        "reviewsPerMonth": 80,
+        "currentResponseHours": 48,
+        "minutesPerReplyToday": 8,
+        "minutesPerReplyWithA3": 1,
+        "hourlyRate": 35
+      },
+      "$readme": "minutesPerReply = staff time per reply, before/after. hourlyRate = blended cost of the person writing replies today."
+    },
+    "pricing": {
+      "tiers": [
+        {
+          "name": "Starter",
+          "price": "$299",
+          "cadence": "/ rooftop / mo",
+          "tagline": "For single-rooftop dealerships getting started.",
+          "features": [
+            "1 dealership",
+            "All 6 review platforms",
+            "AI drafts every reply",
+            "GM one-click approval",
+            "Up to 500 reviews / mo",
+            "Email support"
+          ],
+          "ctaLabel": "Start a trial",
+          "highlight": false
+        },
+        {
+          "name": "Growth",
+          "price": "$249",
+          "cadence": "/ rooftop / mo",
+          "tagline": "Multi-rooftop dealer groups. Most popular.",
+          "features": [
+            "Up to 5 dealerships",
+            "Everything in Starter",
+            "Legal-risk auto-escalation",
+            "Per-rooftop tone tuning",
+            "Up to 2,500 reviews / mo",
+            "Priority support + Slack channel"
+          ],
+          "ctaLabel": "Book a call",
+          "highlight": true
+        },
+        {
+          "name": "Agency",
+          "price": "Custom",
+          "cadence": "annual contract",
+          "tagline": "Agencies managing 6+ dealership clients.",
+          "features": [
+            "Unlimited dealerships",
+            "Everything in Growth",
+            "White-label branding",
+            "Bulk operations + CSV export",
+            "SOC2 + custom DPA",
+            "Dedicated success manager"
+          ],
+          "ctaLabel": "Talk to sales",
+          "highlight": false
+        }
+      ]
+    },
+    "faq": [
+      {
+        "q": "Does it post replies automatically?",
+        "a": "Only if you want it to. By default, every reply goes to a GM inbox for one-click approval. You can set per-dealership rules - e.g. auto-publish 5-star reviews with >90% AI confidence, hold everything else for approval."
+      },
+      {
+        "q": "What happens with negative or legal-risk reviews?",
+        "a": "The AI flags them and routes them to escalation instead of generating a public reply. A human (GM or legal) sees them first, with the matched risk keywords highlighted. No bad reply ever ships without sign-off."
+      },
+      {
+        "q": "How long does setup take?",
+        "a": "Most dealerships are live within a week. We handle the OAuth connections to Google, Yelp, Facebook, BBB, DealerRater, and Cars.com on the kickoff call. Your team only does the tone-of-voice review."
+      },
+      {
+        "q": "Does it integrate with our CRM or CDP?",
+        "a": "Yes - we push review + response activity into your CRM via webhook (Salesforce, HubSpot, VinSolutions, DealerSocket all supported). Two-way sync available on Growth and Agency plans."
+      },
+      {
+        "q": "What if the AI writes something wrong?",
+        "a": "Two safety nets: (1) GMs see every reply before it ships, with an edit textarea right there; (2) the AI flags low-confidence drafts and refuses to generate for anything resembling a legal complaint. The audit log shows who approved what and when."
+      }
+    ]
   },
   "org": {
     "name": "A3 Brands",

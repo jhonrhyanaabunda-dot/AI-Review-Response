@@ -65,6 +65,10 @@ export function InboxClient({
   const [, startTransition] = useTransition();
   const [selected, setSelected] = useState<Set<string>>(new Set());
   const [pending, setPending] = useState<Record<string, boolean>>({});
+  // Optimistically remove a row from view the moment the user clicks Approve
+  // or Reject, before the server roundtrip. router.refresh() reconciles a
+  // beat later. If the API errors, we re-add to keep the UI honest.
+  const [optimisticallyHidden, setOptimisticallyHidden] = useState<Set<string>>(new Set());
   const [confidence, setConfidence] = useState<ConfidenceFilter>("all");
 
   const toggleSelect = (id: string, on: boolean) => {
@@ -93,16 +97,23 @@ export function InboxClient({
 
   const decide = async (reviewId: string, decision: "APPROVED" | "REJECTED") => {
     setPending((p) => ({ ...p, [reviewId]: true }));
+    setOptimisticallyHidden((h) => new Set(h).add(reviewId));
     try {
       await request(`/api/reviews/${reviewId}/decision`, {
         method: "POST",
         body: JSON.stringify({ decision }),
       });
       toast.success(
-        decision === "APPROVED" ? "Approved & queued for publish" : "Response rejected",
+        decision === "APPROVED" ? "Approved & published" : "Response rejected",
       );
       startTransition(() => router.refresh());
     } catch (e) {
+      // Roll back the optimistic removal so the GM doesn't lose sight of it.
+      setOptimisticallyHidden((h) => {
+        const next = new Set(h);
+        next.delete(reviewId);
+        return next;
+      });
       toast.error((e as Error).message);
     } finally {
       setPending((p) => ({ ...p, [reviewId]: false }));
@@ -111,18 +122,29 @@ export function InboxClient({
 
   const bulkApprove = async () => {
     if (selected.size === 0) return;
+    const ids = Array.from(selected);
+    setOptimisticallyHidden((h) => {
+      const next = new Set(h);
+      ids.forEach((id) => next.add(id));
+      return next;
+    });
     try {
       const result = await request<{ approved: number }>(
         "/api/responses/bulk-approve",
         {
           method: "POST",
-          body: JSON.stringify({ reviewIds: Array.from(selected) }),
+          body: JSON.stringify({ reviewIds: ids }),
         },
       );
       toast.success(`Approved ${result.approved} responses`);
       setSelected(new Set());
       router.refresh();
     } catch (e) {
+      setOptimisticallyHidden((h) => {
+        const next = new Set(h);
+        ids.forEach((id) => next.delete(id));
+        return next;
+      });
       toast.error((e as Error).message);
     }
   };
@@ -186,13 +208,15 @@ export function InboxClient({
       </div>
 
       {(() => {
-        const filtered = items.filter((r) => {
-          if (confidence === "all") return true;
-          const c = r.responses[0]?.confidence ?? 0;
-          if (confidence === "high") return c >= 0.8;
-          if (confidence === "mid") return c >= 0.5 && c < 0.8;
-          return c < 0.5;
-        });
+        const filtered = items
+          .filter((r) => !optimisticallyHidden.has(r.id))
+          .filter((r) => {
+            if (confidence === "all") return true;
+            const c = r.responses[0]?.confidence ?? 0;
+            if (confidence === "high") return c >= 0.8;
+            if (confidence === "mid") return c >= 0.5 && c < 0.8;
+            return c < 0.5;
+          });
         if (filtered.length === 0) {
           return (
             <Card>

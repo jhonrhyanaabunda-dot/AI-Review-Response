@@ -73,6 +73,9 @@ export default function LandingPage() {
             <Link href="/pitch" className="hidden text-sm font-normal text-foreground/80 transition-colors hover:text-primary sm:inline">
               Why A3
             </Link>
+            <Link href="/pricing" className="hidden text-sm font-normal text-foreground/80 transition-colors hover:text-primary sm:inline">
+              Pricing
+            </Link>
             <Button asChild variant="ghost" className="hidden sm:inline-flex">
               <a href={config.bookACallUrl} target="_blank" rel="noreferrer">
                 {config.bookACallLabel}
@@ -243,6 +246,7 @@ export default function LandingPage() {
           <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
           <div className="flex items-center gap-5">
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
+            <Link href="/pricing" className="hover:text-primary">Pricing</Link>
             <Link href="/dashboard" className="hover:text-primary">Demo</Link>
             <a href={config.bookACallUrl} target="_blank" rel="noreferrer" className="hover:text-primary">
               {config.bookACallLabel}
