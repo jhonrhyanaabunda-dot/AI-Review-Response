@@ -1,17 +1,8 @@
 "use client";
-import {
-  Bar,
-  BarChart,
-  CartesianGrid,
-  Cell,
-  LabelList,
-  ResponsiveContainer,
-  Tooltip,
-  XAxis,
-  YAxis,
-} from "recharts";
+import { useMemo, useState } from "react";
 import type { ReviewPlatform } from "@prisma/client";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Star } from "lucide-react";
 
 const PLATFORM_LABEL: Record<ReviewPlatform, string> = {
   GOOGLE: "Google",
@@ -38,68 +29,101 @@ export type PlatformBarsData = Array<{
 }>;
 
 export function PlatformBars({ data }: { data: PlatformBarsData }) {
-  const rows = data
-    .map((d) => ({
-      name: PLATFORM_LABEL[d.platform],
-      key: d.platform,
-      count: d.count,
-      avgRating: d.avgRating,
-    }))
-    .sort((a, b) => b.count - a.count);
+  const [hovered, setHovered] = useState<ReviewPlatform | null>(null);
+
+  const rows = useMemo(
+    () =>
+      data
+        .map((d) => ({
+          ...d,
+          label: PLATFORM_LABEL[d.platform],
+          color: PLATFORM_COLOR[d.platform],
+        }))
+        .sort((a, b) => b.count - a.count),
+    [data],
+  );
+
+  const total = useMemo(() => rows.reduce((s, r) => s + r.count, 0), [rows]);
+  const maxCount = useMemo(() => Math.max(1, ...rows.map((r) => r.count)), [rows]);
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="text-base">Reviews per platform</CardTitle>
+        <p className="text-xs text-muted-foreground">
+          {total.toLocaleString()} total across {rows.length} platform
+          {rows.length === 1 ? "" : "s"}.
+        </p>
       </CardHeader>
-      <CardContent className="h-64">
+      <CardContent className="pt-2">
         {rows.length === 0 ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted-foreground">
+          <div className="flex h-48 items-center justify-center text-sm text-muted-foreground">
             No reviews in range.
           </div>
         ) : (
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={rows} margin={{ top: 16, right: 16, left: -10, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
-              <XAxis
-                dataKey="name"
-                tick={{ fontSize: 11 }}
-                stroke="hsl(var(--muted-foreground))"
-                tickLine={false}
-              />
-              <YAxis
-                tick={{ fontSize: 11 }}
-                stroke="hsl(var(--muted-foreground))"
-                tickLine={false}
-                axisLine={false}
-                allowDecimals={false}
-              />
-              <Tooltip
-                cursor={{ fill: "hsl(var(--muted) / 0.4)" }}
-                contentStyle={{
-                  background: "hsl(var(--popover))",
-                  border: "1px solid hsl(var(--border))",
-                  borderRadius: 12,
-                  fontSize: 12,
-                }}
-                formatter={(value, _name, item) => {
-                  const r = (item.payload as { avgRating: number }).avgRating;
-                  return [`${value} reviews (avg ${r.toFixed(1)}★)`, ""];
-                }}
-              />
-              <Bar dataKey="count" radius={[8, 8, 0, 0]} maxBarSize={48}>
-                {rows.map((r) => (
-                  <Cell key={r.key} fill={PLATFORM_COLOR[r.key as ReviewPlatform]} />
-                ))}
-                <LabelList
-                  dataKey="count"
-                  position="top"
-                  style={{ fontSize: 11, fill: "hsl(var(--muted-foreground))" }}
-                />
-              </Bar>
-            </BarChart>
-          </ResponsiveContainer>
+          <ul className="space-y-2.5">
+            {rows.map((r, i) => {
+              const pct = (r.count / maxCount) * 100;
+              const sharePct = total ? (r.count / total) * 100 : 0;
+              const isHovered = hovered === r.platform;
+              return (
+                <li
+                  key={r.platform}
+                  onMouseEnter={() => setHovered(r.platform)}
+                  onMouseLeave={() => setHovered(null)}
+                  className="group cursor-default"
+                >
+                  <div className="flex items-baseline justify-between gap-3 text-xs">
+                    <div className="flex items-center gap-2">
+                      <span
+                        className="grid h-4 w-4 place-items-center rounded-sm text-[9px] font-extrabold uppercase text-white shadow-sm"
+                        style={{ background: r.color }}
+                        aria-hidden
+                      >
+                        {r.label[0]}
+                      </span>
+                      <span className="font-medium text-foreground">{r.label}</span>
+                      <span className="text-muted-foreground">
+                        · {sharePct.toFixed(0)}%
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-muted-foreground">
+                      <span className="inline-flex items-center gap-0.5">
+                        <Star className="h-3 w-3 fill-warning text-warning" />
+                        <span className="tabular-nums text-foreground">
+                          {r.avgRating.toFixed(1)}
+                        </span>
+                      </span>
+                      <span className="tabular-nums">{r.count}</span>
+                    </div>
+                  </div>
+                  <div className="mt-1 h-2.5 w-full overflow-hidden rounded-full bg-muted">
+                    <div
+                      className="h-full origin-left rounded-full transition-[width,filter] duration-700 ease-out"
+                      style={{
+                        width: `${pct}%`,
+                        // Stagger reveal: delay each bar by 80ms via animation.
+                        background: `linear-gradient(90deg, ${r.color}, ${r.color}cc)`,
+                        filter: isHovered ? "brightness(1.1) saturate(1.1)" : "none",
+                        animation: `barGrow 800ms ${i * 80}ms cubic-bezier(0.2, 0.8, 0.2, 1) both`,
+                      }}
+                    />
+                  </div>
+                </li>
+              );
+            })}
+          </ul>
         )}
+        <style jsx>{`
+          @keyframes barGrow {
+            from {
+              transform: scaleX(0);
+            }
+            to {
+              transform: scaleX(1);
+            }
+          }
+        `}</style>
       </CardContent>
     </Card>
   );
