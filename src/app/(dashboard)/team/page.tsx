@@ -1,21 +1,12 @@
-import { requirePermission } from "@/server/rbac/guard";
-import { prisma } from "@/lib/db/prisma";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { listMembers } from "@/lib/demo/store";
 
 export const dynamic = "force-dynamic";
 
 export default async function TeamPage() {
-  const ctx = await requirePermission("members:read");
-  const members = await prisma.membership.findMany({
-    where: { organizationId: ctx.organizationId },
-    include: {
-      user: { select: { id: true, name: true, email: true, image: true, lastLoginAt: true } },
-      dealership: { select: { name: true } },
-    },
-    orderBy: { createdAt: "asc" },
-  });
+  const members = listMembers();
 
   return (
     <div className="space-y-6">

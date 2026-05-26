@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { redirect } from "next/navigation";
 import {
   Sparkles,
   Inbox,
@@ -9,7 +8,6 @@ import {
   ShieldCheck,
   ArrowRight,
 } from "lucide-react";
-import { auth } from "@/lib/auth";
 import { PlatformIcon } from "@/components/reviews/platform-icon";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -18,9 +16,6 @@ import type { ReviewPlatform } from "@prisma/client";
 export const dynamic = "force-dynamic";
 
 export default async function LandingPage() {
-  const session = await auth();
-  if (session?.user?.id) redirect("/dashboard");
-
   const platforms: ReviewPlatform[] = [
     "GOOGLE",
     "YELP",
@@ -79,7 +74,7 @@ export default async function LandingPage() {
               Why A3
             </Link>
             <Button asChild>
-              <Link href="/login">Sign in</Link>
+              <Link href="/dashboard">Sign in</Link>
             </Button>
           </nav>
         </div>
@@ -114,7 +109,7 @@ export default async function LandingPage() {
             </p>
             <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
               <Button asChild size="lg">
-                <Link href="/login">
+                <Link href="/dashboard">
                   See the demo <ArrowRight className="h-4 w-4" />
                 </Link>
               </Button>
@@ -224,7 +219,7 @@ export default async function LandingPage() {
             48 reviews across all six platforms.
           </p>
           <Button asChild size="lg">
-            <Link href="/login">
+            <Link href="/dashboard">
               Open the demo <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>
@@ -236,7 +231,7 @@ export default async function LandingPage() {
           <div>© {new Date().getFullYear()} A3 Brands. AI Review Response - prototype.</div>
           <div className="flex items-center gap-5">
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
-            <Link href="/login" className="hover:text-primary">Sign in</Link>
+            <Link href="/dashboard" className="hover:text-primary">Sign in</Link>
           </div>
         </div>
       </footer>

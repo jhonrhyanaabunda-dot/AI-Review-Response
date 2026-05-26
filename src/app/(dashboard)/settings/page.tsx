@@ -1,16 +1,11 @@
-import { requirePermission } from "@/server/rbac/guard";
-import { prisma } from "@/lib/db/prisma";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { getOrg } from "@/lib/demo/store";
 
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const ctx = await requirePermission("settings:write");
-  const org = await prisma.organization.findUniqueOrThrow({
-    where: { id: ctx.organizationId },
-    select: { name: true, slug: true, plan: true, billingEmail: true },
-  });
+  const org = getOrg();
 
   return (
     <div className="space-y-6">
@@ -43,7 +38,7 @@ export default async function SettingsPage() {
               <CardDescription>Default tone, sign-off, and confidence thresholds.</CardDescription>
             </CardHeader>
             <CardContent className="text-sm text-muted-foreground">
-              Configure per-dealership overrides under each dealership's page.
+              Configure per-dealership overrides under each dealership&apos;s page.
             </CardContent>
           </Card>
         </TabsContent>

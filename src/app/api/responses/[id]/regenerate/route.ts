@@ -1,7 +1,7 @@
 import { requirePermission } from "@/server/rbac/guard";
 import { handleApiError, ok } from "@/lib/utils/api";
 import { regenerate } from "@/server/services/responses";
-import { prisma } from "@/lib/db/prisma";
+import { fixture } from "@/lib/demo/data";
 import { NotFoundError } from "@/lib/utils/errors";
 
 export async function POST(
@@ -11,10 +11,7 @@ export async function POST(
   try {
     const ctx = await requirePermission("responses:generate");
     const { id } = await params;
-    const response = await prisma.aiResponse.findFirst({
-      where: { id, organizationId: ctx.organizationId },
-      select: { reviewId: true },
-    });
+    const response = fixture.responses.find((r) => r.id === id);
     if (!response) throw new NotFoundError();
     await regenerate({
       organizationId: ctx.organizationId,

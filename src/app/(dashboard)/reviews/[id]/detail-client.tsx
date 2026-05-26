@@ -5,16 +5,13 @@ import { format } from "date-fns";
 import { toast } from "sonner";
 import { CheckCircle2, RefreshCw, Sparkles, XCircle, Wand2 } from "lucide-react";
 import { useTypewriter } from "@/hooks/use-typewriter";
+import type { ResponseStatus as RS } from "@prisma/client";
 import type {
-  AiResponse,
-  Dealership,
-  Review,
-  ReviewNote,
-  ResponseStatus as RS,
-  Escalation,
-  ActivityLog,
-  Location,
-} from "@prisma/client";
+  DemoReviewDetail,
+  DemoReviewRecord,
+} from "@/lib/demo/store";
+
+type AiResponse = DemoReviewDetail["responses"][number];
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Textarea } from "@/components/ui/textarea";
@@ -25,14 +22,9 @@ import { SentimentBadge } from "@/components/reviews/sentiment-badge";
 import { AgentTimeline } from "@/components/reviews/agent-timeline";
 import { useApi } from "@/hooks/use-api";
 
-type FullReview = Review & {
-  dealership: Dealership;
-  location: Location | null;
-  responses: AiResponse[];
-  notes: ReviewNote[];
-  escalations: Escalation[];
-  activityLogs: ActivityLog[];
-};
+type FullReview = DemoReviewDetail;
+// Re-export for downstream type checks (keeps tree-shaking honest).
+export type ReviewRecord = DemoReviewRecord;
 
 function activeResponse(responses: AiResponse[]) {
   return responses.find((r) => !r.supersededAt) ?? responses[0] ?? null;

@@ -2,7 +2,7 @@ import { requirePermission } from "@/server/rbac/guard";
 import { handleApiError, ok } from "@/lib/utils/api";
 import { responseDecisionSchema } from "@/lib/validation";
 import { decide } from "@/server/services/responses";
-import { prisma } from "@/lib/db/prisma";
+import { fixture } from "@/lib/demo/data";
 import { NotFoundError } from "@/lib/utils/errors";
 
 export async function POST(
@@ -14,10 +14,7 @@ export async function POST(
     const { id } = await params;
     const body = responseDecisionSchema.parse(await req.json());
 
-    const response = await prisma.aiResponse.findFirst({
-      where: { id, organizationId: ctx.organizationId },
-      select: { id: true, reviewId: true },
-    });
+    const response = fixture.responses.find((r) => r.id === id);
     if (!response) throw new NotFoundError();
 
     const result = await decide({
