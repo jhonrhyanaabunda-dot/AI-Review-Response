@@ -30,6 +30,27 @@ export type LogoMark = { name: string; wordmark: string };
 export type LegalSection = { heading: string; body: string };
 export type ComparisonRow = { feature: string; values: Array<string | boolean> };
 
+export type MethodologyPillar = {
+  key: string;
+  step: number;
+  name: string;
+  tagline: string;
+  body: string;
+  proof: string;
+};
+
+export type MethodologyPrinciple = { title: string; body: string };
+
+export type Methodology = {
+  name: string;
+  subtitle: string;
+  promise: string;
+  pillars: MethodologyPillar[];
+  principles: MethodologyPrinciple[];
+  without: string[];
+  with: string[];
+};
+
 type Config = {
   bookACallUrl: string;
   bookACallLabel: string;
@@ -42,6 +63,7 @@ type Config = {
   comparison: { vendors: string[]; rows: ComparisonRow[] };
   legal: { lastUpdated: string; privacy: LegalSection[]; terms: LegalSection[] };
   security: { lastUpdated: string; sections: LegalSection[] };
+  methodology: Methodology;
 };
 
 const FALLBACK: Config = {
@@ -64,6 +86,15 @@ const FALLBACK: Config = {
   comparison: { vendors: [], rows: [] },
   legal: { lastUpdated: "", privacy: [], terms: [] },
   security: { lastUpdated: "", sections: [] },
+  methodology: {
+    name: "The 90-Second Response Method",
+    subtitle: "",
+    promise: "",
+    pillars: [],
+    principles: [],
+    without: [],
+    with: [],
+  },
 };
 
 export const config: Config = {

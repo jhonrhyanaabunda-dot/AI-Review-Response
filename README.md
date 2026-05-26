@@ -66,6 +66,7 @@ vars touched).
 | Customer logos + testimonial quotes | [`demo-data/fixture.json`](demo-data/fixture.json) → `config.socialProof` | Renders on `/` and `/pitch`. |
 | Privacy + Terms content | [`demo-data/fixture.json`](demo-data/fixture.json) → `config.legal` | Renders at `/privacy` and `/terms`. |
 | Security page content | [`demo-data/fixture.json`](demo-data/fixture.json) → `config.security` | Renders at `/security`. |
+| Methodology (5 pillars, principles, without/with) | [`demo-data/fixture.json`](demo-data/fixture.json) → `config.methodology` | Renders at `/methodology` with the animated loop diagram. |
 | Per-prospect overlays | [`prospects/*.json`](prospects/) + one line in [`src/lib/demo/prospects.ts`](src/lib/demo/prospects.ts) | Send `your-deploy.vercel.app/p/<slug>` to a prospect. |
 | Marketing landing copy | [`src/app/page.tsx`](src/app/page.tsx) | |
 | Pitch sections + headlines | [`src/app/pitch/page.tsx`](src/app/pitch/page.tsx) | |

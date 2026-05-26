@@ -275,6 +275,7 @@ export default function PitchPage() {
         <div className="mx-auto flex max-w-3xl flex-col items-center gap-4 px-6 py-8 text-xs text-muted-foreground md:flex-row md:justify-between">
           <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <Link href="/methodology" className="hover:text-primary">Method</Link>
             <Link href="/pricing" className="hover:text-primary">Pricing</Link>
             <Link href="/dashboard" className="hover:text-primary">Demo</Link>
             <Link href="/security" className="hover:text-primary">Security</Link>

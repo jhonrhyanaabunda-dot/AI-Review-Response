@@ -85,6 +85,84 @@
         }
       ]
     },
+    "methodology": {
+      "$readme": "The 90-Second Response Method - 5 pillars, one loop. Edit copy here; the page at /methodology renders it.",
+      "name": "The 90-Second Response Method",
+      "subtitle": "Five pillars, one loop. How A3 Brands gets a dealership from new review to published reply in under two minutes - without ever shipping a reply a GM didn't approve.",
+      "promise": "From new review to published reply in 90 seconds. Every reply seen by a human. Every legal risk caught before it ships.",
+      "pillars": [
+        {
+          "key": "capture",
+          "step": 1,
+          "name": "Capture",
+          "tagline": "All 6 platforms, one inbox.",
+          "body": "Google, Yelp, DealerRater, Cars.com, Facebook, and BBB stream into a single inbox every few minutes. No tab-switching, no missed reviews. Deduped at ingest, scoped by rooftop, ordered newest-first.",
+          "proof": "6 platforms"
+        },
+        {
+          "key": "classify",
+          "step": 2,
+          "name": "Classify",
+          "tagline": "Sentiment + risk, in real time.",
+          "body": "Every incoming review is scored on sentiment (positive / neutral / negative / angry / legal-risk) and a confidence value. The signal drives routing: praise can auto-publish, complaints get human eyes, legal language gets pulled aside immediately.",
+          "proof": "<2s to classify"
+        },
+        {
+          "key": "compose",
+          "step": 3,
+          "name": "Compose",
+          "tagline": "On-brand drafts, tuned per rooftop.",
+          "body": "The AI writes a publish-ready reply in your dealership's voice - tone preset, sign-off, and house rules baked in. Confidence scoring + flag reasons surface alongside the draft so the GM sees what to verify before approving.",
+          "proof": "92% avg confidence"
+        },
+        {
+          "key": "check",
+          "step": 4,
+          "name": "Check",
+          "tagline": "Risk caught before it ships.",
+          "body": "Legal language, BBB complaints, lemon-law mentions, attorney references, and angry-customer escalations are routed to a separate queue with the GM and (optionally) legal counsel - never auto-published. The audit log captures every escalation, who reviewed it, and what they decided.",
+          "proof": "0 unreviewed legal replies"
+        },
+        {
+          "key": "close",
+          "step": 5,
+          "name": "Close",
+          "tagline": "One click. Published. Done.",
+          "body": "GM scans the draft on phone or desktop, edits inline if needed, hits Approve. The reply is posted back to the source platform via the same connection that pulled it. The whole loop - ingest to published - finishes in a median of 90 seconds.",
+          "proof": "90s median"
+        }
+      ],
+      "principles": [
+        {
+          "title": "Human-in-the-loop, by default",
+          "body": "We never auto-publish anything resembling a complaint or legal issue. Auto-publish for 5-star reviews is opt-in, per rooftop."
+        },
+        {
+          "title": "The audit log is the contract",
+          "body": "Every approve, reject, regenerate, escalate, and publish is logged with actor + timestamp. Exportable any time. SOC2-shaped."
+        },
+        {
+          "title": "Per-rooftop voice",
+          "body": "Each dealership gets its own tone preset, sign-off, and AI instructions. Smith Toyota doesn't sound like Bayside Honda."
+        },
+        {
+          "title": "Edit-friendly, not rigid",
+          "body": "The GM can edit the AI draft inline before publishing. The system learns from edits and the next draft is closer to the rooftop's voice."
+        }
+      ],
+      "without": [
+        "Reviews go unanswered for days because nobody's checking 6 platforms.",
+        "When a GM does reply, they write on their phone between meetings - quality is uneven.",
+        "Negative or legal-risk reviews get a generic reply that makes things worse.",
+        "No record of who approved what, so legal/compliance has no audit trail."
+      ],
+      "with": [
+        "Every review answered within minutes, across all 6 platforms.",
+        "Replies match the dealership's voice and sign-off, every time.",
+        "Risk language is caught before any reply goes public.",
+        "Every decision is logged with actor + timestamp - SOC2-ready."
+      ]
+    },
     "socialProof": {
       "logos": [
         { "name": "Smith Toyota", "wordmark": "SMITH TOYOTA" },

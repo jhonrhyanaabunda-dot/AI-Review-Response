@@ -121,6 +121,7 @@ export default function PricingPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-12">
           <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <Link href="/methodology" className="hover:text-primary">Method</Link>
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
             <Link href="/dashboard" className="hover:text-primary">Demo</Link>
             <Link href="/security" className="hover:text-primary">Security</Link>

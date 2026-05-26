@@ -11,7 +11,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/pitch", "/pricing"],
+        allow: ["/", "/pitch", "/pricing", "/methodology", "/security", "/privacy", "/terms"],
         // Per-prospect overlay URLs and demo internals shouldn't be indexed.
         disallow: ["/p/", "/api/", "/dashboard", "/inbox", "/reviews", "/analytics", "/dealerships", "/team", "/settings"],
       },

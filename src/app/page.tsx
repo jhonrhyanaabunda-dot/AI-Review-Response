@@ -74,6 +74,9 @@ export default function LandingPage() {
             </div>
           </div>
           <nav className="flex items-center gap-6">
+            <Link href="/methodology" className="hidden text-sm font-normal text-foreground/80 transition-colors hover:text-primary sm:inline">
+              Method
+            </Link>
             <Link href="/pitch" className="hidden text-sm font-normal text-foreground/80 transition-colors hover:text-primary sm:inline">
               Why A3
             </Link>
@@ -255,6 +258,7 @@ export default function LandingPage() {
         <div className="mx-auto flex max-w-[1440px] flex-col items-center justify-between gap-4 px-6 py-8 text-xs text-muted-foreground md:flex-row md:px-14">
           <div>© {new Date().getFullYear()} A3 Brands. AI Review Response.</div>
           <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-2">
+            <Link href="/methodology" className="hover:text-primary">Method</Link>
             <Link href="/pitch" className="hover:text-primary">Pitch</Link>
             <Link href="/pricing" className="hover:text-primary">Pricing</Link>
             <Link href="/dashboard" className="hover:text-primary">Demo</Link>
