@@ -183,7 +183,9 @@ function mulberry32(seed: number) {
   };
 }
 
-// ─────────────────────────── Sample content ───────────────────────────
+// ─────────────────────────── Sample content (from JSON fixture) ───────────────────────────
+
+import fixtureJson from "../../../demo-data/fixture.json";
 
 type Sample = {
   rating: number;
@@ -194,39 +196,16 @@ type Sample = {
   flags?: string[];
 };
 
-const POSITIVE: Sample[] = [
-  { rating: 5, authorName: "Maria L.", body: "Best buying experience ever. Carlos helped us trade up to a new Camry - easy and quick.", sentiment: "POSITIVE", confidence: 0.92 },
-  { rating: 5, authorName: "Priya R.", body: "Loved the no-pressure sales approach. Jamal answered every question and didn't push extras.", sentiment: "POSITIVE", confidence: 0.94 },
-  { rating: 5, authorName: "Eric W.", body: "Service appointment was on time and the work was explained clearly. Will be back.", sentiment: "POSITIVE", confidence: 0.9 },
-  { rating: 5, authorName: "Aisha K.", body: "Bought our family SUV here. The team made financing painless and we drove off the same day.", sentiment: "POSITIVE", confidence: 0.91 },
-  { rating: 5, authorName: "Tom & Beth", body: "Lana in service is fantastic. Always remembers our names and our cars.", sentiment: "POSITIVE", confidence: 0.89 },
-  { rating: 5, authorName: "Jordan F.", body: "Smooth process from test drive to keys. Honest pricing, no surprises at signing.", sentiment: "POSITIVE", confidence: 0.93 },
-  { rating: 4, authorName: "Devon S.", body: "Friendly staff, fair pricing. Wish the financing process was faster.", sentiment: "POSITIVE", confidence: 0.88 },
-  { rating: 4, authorName: "Hannah P.", body: "Good experience overall. Sales rep was attentive though the loaner car situation was unclear.", sentiment: "POSITIVE", confidence: 0.82 },
-  { rating: 4, authorName: "Marcus O.", body: "Solid trade-in offer, quick paperwork. Coffee machine was broken though :)", sentiment: "POSITIVE", confidence: 0.85 },
-  { rating: 4, authorName: "Sofia A.", body: "First-time buyer here. The team walked me through every step without rushing.", sentiment: "POSITIVE", confidence: 0.87 },
-  { rating: 4, authorName: "Wesley B.", body: "Service team got me in on short notice when my brakes started squealing. Appreciate it.", sentiment: "POSITIVE", confidence: 0.86 },
-];
-
-const NEUTRAL: Sample[] = [
-  { rating: 3, authorName: "Mike T.", body: "Decent experience overall. The waiting area could use some work - wifi was spotty.", sentiment: "NEUTRAL", confidence: 0.81 },
-  { rating: 3, authorName: "Renee J.", body: "Got the car I wanted at a fair price. Wish the trade-in negotiation hadn't taken two hours.", sentiment: "NEUTRAL", confidence: 0.77 },
-  { rating: 3, authorName: "Chen L.", body: "Service was fine. Cost a bit more than the dealer down the road but they were quicker.", sentiment: "NEUTRAL", confidence: 0.75 },
-  { rating: 3, authorName: "Bea M.", body: "The car is great, the dealership is okay. Some communication gaps on delivery timing.", sentiment: "NEUTRAL", confidence: 0.79 },
-];
-
-const NEGATIVE: Sample[] = [
-  { rating: 2, authorName: "John D.", body: "Service department took twice the estimated time. No one called to update us. Won't be back.", sentiment: "NEGATIVE", confidence: 0.74, flags: ["Service delay; verify timeline before publishing"] },
-  { rating: 2, authorName: "Karen H.", body: "Salesperson kept upselling extras I didn't want even after I said no twice. Frustrating.", sentiment: "NEGATIVE", confidence: 0.7, flags: ["High-pressure sales concern raised"] },
-  { rating: 2, authorName: "Brendan O.", body: "Quote on the phone didn't match the in-store quote. Felt like a bait-and-switch.", sentiment: "NEGATIVE", confidence: 0.66, flags: ["Pricing complaint - verify quote before publishing"] },
-  { rating: 1, authorName: "Tasha R.", body: "Worst experience. Showed up for a confirmed appointment, was told the tech was out. Wasted my afternoon.", sentiment: "ANGRY", confidence: 0.55, flags: ["Angry customer - recommend GM follow-up offline"] },
-  { rating: 1, authorName: "Dom P.", body: "Sold us a car with an undisclosed accident on the carfax. Going to dispute the sale.", sentiment: "ANGRY", confidence: 0.48, flags: ["Allegation about undisclosed history - legal review recommended"] },
-];
-
-const LEGAL: Sample[] = [
-  { rating: 1, authorName: "Anonymous", body: "They sold us a lemon and won't honor the warranty. We've contacted our lawyer and the BBB.", sentiment: "LEGAL_RISK", confidence: 0.32, flags: ["Legal language detected - escalation recommended", "Mentions lemon law and pending counsel"] },
-  { rating: 1, authorName: "M.G.", body: "Filing a complaint with the state attorney general about predatory finance terms.", sentiment: "LEGAL_RISK", confidence: 0.3, flags: ["State AG referenced - escalate to legal counsel"] },
-];
+const SAMPLES = fixtureJson.samples as {
+  positive: Sample[];
+  neutral: Sample[];
+  negative: Sample[];
+  legal: Sample[];
+};
+const POSITIVE = SAMPLES.positive;
+const NEUTRAL = SAMPLES.neutral;
+const NEGATIVE = SAMPLES.negative;
+const LEGAL = SAMPLES.legal;
 
 const DRAFT_TEMPLATES = {
   positive: (n: string, d: string, s: string) =>
@@ -270,12 +249,13 @@ function buildFixture() {
   const now = Date.now();
   const baseDate = new Date("2026-05-01T12:00:00Z");
 
+  const orgFromJson = fixtureJson.org as { name: string; slug: string; plan: string; billingEmail: string | null };
   const org: DemoOrg = {
     id: DEMO_ORG_ID,
-    slug: "a3-brands",
-    name: "A3 Brands",
-    plan: "starter",
-    billingEmail: "billing@a3brands.com",
+    slug: orgFromJson.slug,
+    name: orgFromJson.name,
+    plan: orgFromJson.plan,
+    billingEmail: orgFromJson.billingEmail,
   };
 
   const users: DemoUser[] = [
@@ -283,51 +263,40 @@ function buildFixture() {
     { id: DEMO_GM_ID, email: "gm@example.com", name: "Sam Manager", image: null, lastLoginAt: baseDate },
   ];
 
-  const dealerships: DemoDealership[] = [
-    {
-      id: "d-smith",
-      organizationId: DEMO_ORG_ID,
-      slug: "smith-toyota",
-      name: "Smith Toyota",
-      brand: "Toyota",
-      tonePreset: "FRIENDLY",
-      signOff: "- The Smith Toyota Team",
-      timezone: "America/New_York",
-      escalationKeywords: ["lemon law", "fraud", "lawyer", "discrim", "BBB", "attorney general"],
-      escalationEmails: ["gm@example.com"],
-      autoPublishThreshold: 5,
-      requireApproval: true,
-      websiteUrl: null,
-      primaryEmail: null,
-      primaryPhone: null,
-      customTone: null,
-      aiInstructions: null,
-      createdAt: baseDate,
-      updatedAt: baseDate,
-    },
-    {
-      id: "d-bayside",
-      organizationId: DEMO_ORG_ID,
-      slug: "bayside-honda",
-      name: "Bayside Honda",
-      brand: "Honda",
-      tonePreset: "OEM_COMPLIANT",
-      signOff: "- The Bayside Honda Team",
-      timezone: "America/New_York",
-      escalationKeywords: ["lemon law", "lawyer", "regulator", "BBB", "attorney general"],
-      escalationEmails: ["gm@example.com"],
-      autoPublishThreshold: 5,
-      requireApproval: true,
-      websiteUrl: null,
-      primaryEmail: null,
-      primaryPhone: null,
-      customTone: null,
-      aiInstructions: null,
-      createdAt: baseDate,
-      updatedAt: baseDate,
-    },
-  ];
+  type DealershipJson = {
+    id: string;
+    slug: string;
+    name: string;
+    brand: string;
+    tonePreset: string;
+    signOff: string;
+    address: { address1: string; city: string; region: string; postalCode: string };
+  };
+  const dealershipsJson = (fixtureJson.dealerships ?? []) as DealershipJson[];
 
+  const dealerships: DemoDealership[] = dealershipsJson.map((d) => ({
+    id: d.id,
+    organizationId: DEMO_ORG_ID,
+    slug: d.slug,
+    name: d.name,
+    brand: d.brand,
+    tonePreset: d.tonePreset as TonePreset,
+    signOff: d.signOff,
+    timezone: "America/New_York",
+    escalationKeywords: ["lemon law", "fraud", "lawyer", "discrim", "BBB", "attorney general"],
+    escalationEmails: ["gm@example.com"],
+    autoPublishThreshold: 5,
+    requireApproval: true,
+    websiteUrl: null,
+    primaryEmail: null,
+    primaryPhone: null,
+    customTone: null,
+    aiInstructions: null,
+    createdAt: baseDate,
+    updatedAt: baseDate,
+  }));
+
+  const firstDealershipId = dealerships[0]?.id ?? null;
   const memberships: DemoMembership[] = [
     {
       id: "m-admin",
@@ -342,24 +311,30 @@ function buildFixture() {
       organizationId: DEMO_ORG_ID,
       userId: DEMO_GM_ID,
       role: "GENERAL_MANAGER",
-      dealershipId: "d-smith",
+      dealershipId: firstDealershipId,
       createdAt: baseDate,
     },
   ];
 
-  const locations: DemoLocation[] = dealerships.map((d) => ({
-    id: `loc-${d.slug}`,
-    dealershipId: d.id,
-    name: "Main Showroom",
-    address1: d.slug === "smith-toyota" ? "100 Auto Mall Dr" : "200 Bayview Blvd",
-    address2: null,
-    city: d.slug === "smith-toyota" ? "Newark" : "Bayside",
-    region: d.slug === "smith-toyota" ? "NJ" : "NY",
-    postalCode: d.slug === "smith-toyota" ? "07102" : "11361",
-    country: "US",
-    latitude: null,
-    longitude: null,
-  }));
+  const addressByDealershipId = new Map(
+    dealershipsJson.map((d) => [d.id, d.address] as const),
+  );
+  const locations: DemoLocation[] = dealerships.map((d) => {
+    const addr = addressByDealershipId.get(d.id)!;
+    return {
+      id: `loc-${d.slug}`,
+      dealershipId: d.id,
+      name: "Main Showroom",
+      address1: addr.address1,
+      address2: null,
+      city: addr.city,
+      region: addr.region,
+      postalCode: addr.postalCode,
+      country: "US",
+      latitude: null,
+      longitude: null,
+    };
+  });
 
   const sources: DemoSource[] = [];
   for (const loc of locations) {

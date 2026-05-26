@@ -1,8 +1,10 @@
+import { NextResponse } from "next/server";
 import { requirePermission } from "@/server/rbac/guard";
-import { handleApiError, ok } from "@/lib/utils/api";
+import { handleApiError } from "@/lib/utils/api";
 import { responseDecisionSchema } from "@/lib/validation";
 import { decide } from "@/server/services/responses";
-import { fixture } from "@/lib/demo/data";
+import { findResponseById } from "@/lib/demo/store";
+import { cookieSerialize } from "@/lib/demo/state-cookie";
 import { NotFoundError } from "@/lib/utils/errors";
 
 export async function POST(
@@ -14,10 +16,10 @@ export async function POST(
     const { id } = await params;
     const body = responseDecisionSchema.parse(await req.json());
 
-    const response = fixture.responses.find((r) => r.id === id);
+    const response = findResponseById(id);
     if (!response) throw new NotFoundError();
 
-    const result = await decide({
+    const { state, result } = await decide({
       organizationId: ctx.organizationId,
       reviewId: response.reviewId,
       actorId: ctx.userId,
@@ -25,7 +27,13 @@ export async function POST(
       comment: body.comment,
       finalBody: body.finalBody,
     });
-    return ok(result);
+    return new NextResponse(JSON.stringify({ ok: true, data: result }), {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "set-cookie": cookieSerialize(state),
+      },
+    });
   } catch (err) {
     return handleApiError(err);
   }

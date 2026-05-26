@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { ZodError } from "zod";
 import { AppError } from "./errors";
-import { logger } from "./logger";
 
 export function ok<T>(data: T, init?: ResponseInit) {
   return NextResponse.json({ ok: true, data }, init);
@@ -21,6 +20,6 @@ export function handleApiError(err: unknown) {
   if (err instanceof AppError) {
     return fail(err.code, err.message, err.status, err.details);
   }
-  logger.error({ err }, "Unhandled API error");
+  console.error("Unhandled API error", err);
   return fail("internal_error", "Something went wrong", 500);
 }

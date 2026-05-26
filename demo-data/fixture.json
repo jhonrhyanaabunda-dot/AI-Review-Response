@@ -1,0 +1,75 @@
+{
+  "$readme": [
+    "EDIT THIS FILE TO CHANGE THE DEMO.",
+    "GitHub web editor works fine - no rebuild reasoning needed.",
+    "Vercel will redeploy automatically on push (~30s).",
+    "",
+    "org: the agency that owns the dashboard.",
+    "dealerships: rooftops shown in the demo. Add or rename freely.",
+    "samples: review templates. Bucketed by sentiment. Add as many as you like.",
+    "  - The demo generates 24 reviews per dealership from these samples.",
+    "  - flags: shown as warning badges in the GM inbox.",
+    "",
+    "For per-prospect demos (Wilson BMW, Metro Auto Group, ...) drop a",
+    "JSON file in /prospects/<slug>.json and import it in",
+    "src/lib/demo/prospects.ts."
+  ],
+  "org": {
+    "name": "A3 Brands",
+    "slug": "a3-brands",
+    "plan": "starter",
+    "billingEmail": "billing@a3brands.com"
+  },
+  "dealerships": [
+    {
+      "id": "d-smith",
+      "slug": "smith-toyota",
+      "name": "Smith Toyota",
+      "brand": "Toyota",
+      "tonePreset": "FRIENDLY",
+      "signOff": "- The Smith Toyota Team",
+      "address": { "address1": "100 Auto Mall Dr", "city": "Newark", "region": "NJ", "postalCode": "07102" }
+    },
+    {
+      "id": "d-bayside",
+      "slug": "bayside-honda",
+      "name": "Bayside Honda",
+      "brand": "Honda",
+      "tonePreset": "OEM_COMPLIANT",
+      "signOff": "- The Bayside Honda Team",
+      "address": { "address1": "200 Bayview Blvd", "city": "Bayside", "region": "NY", "postalCode": "11361" }
+    }
+  ],
+  "samples": {
+    "positive": [
+      { "rating": 5, "authorName": "Maria L.", "body": "Best buying experience ever. Carlos helped us trade up to a new Camry - easy and quick.", "sentiment": "POSITIVE", "confidence": 0.92 },
+      { "rating": 5, "authorName": "Priya R.", "body": "Loved the no-pressure sales approach. Jamal answered every question and didn't push extras.", "sentiment": "POSITIVE", "confidence": 0.94 },
+      { "rating": 5, "authorName": "Eric W.", "body": "Service appointment was on time and the work was explained clearly. Will be back.", "sentiment": "POSITIVE", "confidence": 0.9 },
+      { "rating": 5, "authorName": "Aisha K.", "body": "Bought our family SUV here. The team made financing painless and we drove off the same day.", "sentiment": "POSITIVE", "confidence": 0.91 },
+      { "rating": 5, "authorName": "Tom & Beth", "body": "Lana in service is fantastic. Always remembers our names and our cars.", "sentiment": "POSITIVE", "confidence": 0.89 },
+      { "rating": 5, "authorName": "Jordan F.", "body": "Smooth process from test drive to keys. Honest pricing, no surprises at signing.", "sentiment": "POSITIVE", "confidence": 0.93 },
+      { "rating": 4, "authorName": "Devon S.", "body": "Friendly staff, fair pricing. Wish the financing process was faster.", "sentiment": "POSITIVE", "confidence": 0.88 },
+      { "rating": 4, "authorName": "Hannah P.", "body": "Good experience overall. Sales rep was attentive though the loaner car situation was unclear.", "sentiment": "POSITIVE", "confidence": 0.82 },
+      { "rating": 4, "authorName": "Marcus O.", "body": "Solid trade-in offer, quick paperwork. Coffee machine was broken though :)", "sentiment": "POSITIVE", "confidence": 0.85 },
+      { "rating": 4, "authorName": "Sofia A.", "body": "First-time buyer here. The team walked me through every step without rushing.", "sentiment": "POSITIVE", "confidence": 0.87 },
+      { "rating": 4, "authorName": "Wesley B.", "body": "Service team got me in on short notice when my brakes started squealing. Appreciate it.", "sentiment": "POSITIVE", "confidence": 0.86 }
+    ],
+    "neutral": [
+      { "rating": 3, "authorName": "Mike T.", "body": "Decent experience overall. The waiting area could use some work - wifi was spotty.", "sentiment": "NEUTRAL", "confidence": 0.81 },
+      { "rating": 3, "authorName": "Renee J.", "body": "Got the car I wanted at a fair price. Wish the trade-in negotiation hadn't taken two hours.", "sentiment": "NEUTRAL", "confidence": 0.77 },
+      { "rating": 3, "authorName": "Chen L.", "body": "Service was fine. Cost a bit more than the dealer down the road but they were quicker.", "sentiment": "NEUTRAL", "confidence": 0.75 },
+      { "rating": 3, "authorName": "Bea M.", "body": "The car is great, the dealership is okay. Some communication gaps on delivery timing.", "sentiment": "NEUTRAL", "confidence": 0.79 }
+    ],
+    "negative": [
+      { "rating": 2, "authorName": "John D.", "body": "Service department took twice the estimated time. No one called to update us. Won't be back.", "sentiment": "NEGATIVE", "confidence": 0.74, "flags": ["Service delay; verify timeline before publishing"] },
+      { "rating": 2, "authorName": "Karen H.", "body": "Salesperson kept upselling extras I didn't want even after I said no twice. Frustrating.", "sentiment": "NEGATIVE", "confidence": 0.7, "flags": ["High-pressure sales concern raised"] },
+      { "rating": 2, "authorName": "Brendan O.", "body": "Quote on the phone didn't match the in-store quote. Felt like a bait-and-switch.", "sentiment": "NEGATIVE", "confidence": 0.66, "flags": ["Pricing complaint - verify quote before publishing"] },
+      { "rating": 1, "authorName": "Tasha R.", "body": "Worst experience. Showed up for a confirmed appointment, was told the tech was out. Wasted my afternoon.", "sentiment": "ANGRY", "confidence": 0.55, "flags": ["Angry customer - recommend GM follow-up offline"] },
+      { "rating": 1, "authorName": "Dom P.", "body": "Sold us a car with an undisclosed accident on the carfax. Going to dispute the sale.", "sentiment": "ANGRY", "confidence": 0.48, "flags": ["Allegation about undisclosed history - legal review recommended"] }
+    ],
+    "legal": [
+      { "rating": 1, "authorName": "Anonymous", "body": "They sold us a lemon and won't honor the warranty. We've contacted our lawyer and the BBB.", "sentiment": "LEGAL_RISK", "confidence": 0.32, "flags": ["Legal language detected - escalation recommended", "Mentions lemon law and pending counsel"] },
+      { "rating": 1, "authorName": "M.G.", "body": "Filing a complaint with the state attorney general about predatory finance terms.", "sentiment": "LEGAL_RISK", "confidence": 0.3, "flags": ["State AG referenced - escalate to legal counsel"] }
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "slug": "metro-auto-group",
+  "orgName": "Metro Auto Group",
+  "tagline": "Six rooftops, five OEMs, one place to answer reviews.",
+  "dealerships": [
+    {
+      "name": "Metro Lexus of Tarrytown",
+      "brand": "Lexus",
+      "signOff": "- Metro Lexus Tarrytown"
+    },
+    {
+      "name": "Metro Acura of White Plains",
+      "brand": "Acura",
+      "signOff": "- Metro Acura White Plains"
+    }
+  ]
+}

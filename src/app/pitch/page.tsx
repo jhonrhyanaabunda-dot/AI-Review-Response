@@ -26,7 +26,7 @@ export default function PitchPage() {
             </div>
           </Link>
           <Button asChild>
-            <Link href="/login">See the demo</Link>
+            <Link href="/dashboard">See the demo</Link>
           </Button>
         </div>
       </header>
@@ -220,7 +220,7 @@ export default function PitchPage() {
 
         <div className="mt-16 flex flex-wrap items-center justify-center gap-3">
           <Button asChild size="lg">
-            <Link href="/login">
+            <Link href="/dashboard">
               Open the demo <ArrowRight className="h-4 w-4" />
             </Link>
           </Button>

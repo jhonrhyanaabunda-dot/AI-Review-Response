@@ -15,9 +15,25 @@ const sora = Sora({
 });
 
 export const metadata: Metadata = {
-  title: "A3 Brands - AI Review Response",
+  title: {
+    default: "A3 Brands - AI Review Response",
+    template: "%s · A3 Brands",
+  },
   description:
     "A3 Brands AI Review Response: auto-pull reviews from Google, Yelp, Cars.com, DealerRater, Facebook, and BBB. AI drafts the reply. GM approves with one click. Published back automatically.",
+  openGraph: {
+    type: "website",
+    title: "A3 Brands - AI Review Response",
+    description:
+      "Every review answered. AI drafts. GM approves with one click. Published back to Google, Yelp, BBB, and more.",
+    siteName: "A3 Brands",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "A3 Brands - AI Review Response",
+    description:
+      "Every review answered. AI drafts. GM approves with one click. Published back automatically.",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

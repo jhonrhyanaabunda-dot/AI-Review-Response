@@ -6,7 +6,7 @@ import { listMembers } from "@/lib/demo/store";
 export const dynamic = "force-dynamic";
 
 export default async function TeamPage() {
-  const members = listMembers();
+  const members = await listMembers();
 
   return (
     <div className="space-y-6">

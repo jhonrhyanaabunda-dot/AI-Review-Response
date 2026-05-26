@@ -5,7 +5,7 @@ import { getOrg } from "@/lib/demo/store";
 export const dynamic = "force-dynamic";
 
 export default async function SettingsPage() {
-  const org = getOrg();
+  const org = await getOrg();
 
   return (
     <div className="space-y-6">

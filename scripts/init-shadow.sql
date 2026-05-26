@@ -1,1 +1,0 @@
-CREATE DATABASE ai_review_response_shadow;

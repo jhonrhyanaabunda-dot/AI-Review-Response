@@ -1,79 +1,78 @@
-# AI Review Response
+# A3 Brands AI Review Response - demo
 
-A multi-tenant SaaS platform that automatically ingests reviews from Google, Yelp,
-DealerRater, Cars.com, and Facebook for automotive dealerships, generates contextual
-AI responses, routes them through an approval workflow, and publishes the approved
-replies back to the source platform.
+This repo is a self-contained **sales demo** for A3 Brands AI Review
+Response. It runs end-to-end on Vercel with **zero databases and zero
+required env vars** - the dashboard reads from an in-memory fixture and
+remembers each visitor's approvals via a cookie.
 
-## Stack
+## Deploy to Vercel (30 seconds)
 
-- **Next.js 15 (App Router) + TypeScript + Tailwind + shadcn/ui** - the dashboard
-- **PostgreSQL + Prisma** - durable storage
-- **Redis + BullMQ** - queues and rate limiting
-- **NextAuth v5** - credentials + Google OAuth, JWT sessions
-- **OpenAI API** - sentiment, generation, and QA passes
-- **A directed-graph agent runtime** - ingestion → sentiment → respond → escalate → QA → publish
-- **Docker Compose** - local stack (Postgres, Redis, app, worker)
+1. Import `jhonrhyanaabunda-dot/AI-Review-Response` at vercel.com/new
+2. Framework auto-detects as Next.js
+3. Click **Deploy** - no env vars required
 
-## Quick start
+Optional env vars (set in Project Settings → Environment Variables):
+
+| Variable | What it does |
+| -------- | ------------ |
+| `ANTHROPIC_API_KEY` | Powers the **Regenerate** button with Claude Haiku (~$0.001 / regen). If unset, the demo falls back to canned variants. |
+
+## What's in the demo
+
+| Page | URL |
+| ---- | --- |
+| Marketing landing | `/` |
+| Pitch / ROI page | `/pitch` |
+| Dashboard | `/dashboard` |
+| GM inbox (approve/reject) | `/inbox` |
+| All reviews | `/reviews` |
+| Review detail (with live Regenerate) | `/reviews/[id]` |
+| Analytics | `/analytics` |
+| Dealerships, Team, Settings | `/dealerships`, `/team`, `/settings` |
+
+## Per-prospect demos
+
+Want to send a tailored demo to a specific dealership prospect? Drop a
+JSON file in [`prospects/`](prospects/) and visit `/p/<slug>` once. The
+visitor's cookie remembers the overlay so every dashboard page renders
+with their org name and dealership names baked in.
 
 ```bash
-# 1. Install
-npm install
+# prospects/wilson-bmw.json already exists - see it at:
+your-deploy.vercel.app/p/wilson-bmw
 
-# 2. Configure
-cp .env.example .env
-node scripts/generate-encryption-key.mjs   # paste the result into ENCRYPTION_KEY
-# add OPENAI_API_KEY and any provider keys you have
-
-# 3. Bring up Postgres + Redis
-docker compose up -d postgres redis
-
-# 4. Migrate + seed
-npx prisma migrate dev --name init
-npm run db:seed
-
-# 5. Dev server (one terminal)
-npm run dev
-
-# 6. Worker (another terminal)
-npm run worker:dev
+# To add a new prospect (e.g. "summit-ford"):
+# 1. Create prospects/summit-ford.json (copy wilson-bmw.json as a template)
+# 2. Add `"summit-ford": (await import("../../../prospects/summit-ford.json")).default`
+#    to src/lib/demo/prospects.ts
+# 3. git push → Vercel rebuilds → send your-deploy.vercel.app/p/summit-ford
 ```
 
-Sign in with `admin@example.com` / `password123` (from the seed).
+## Editing the demo content
 
-For the full Docker setup, see [docs/architecture.md](docs/architecture.md)
-and [docs/deployment.md](docs/deployment.md).
+Most demo content lives in editable files at the repo root:
 
-## Key paths
+| What | File | Edit via |
+| ---- | ---- | -------- |
+| Org name, dealerships, sample reviews | [`demo-data/fixture.json`](demo-data/fixture.json) | GitHub web editor (just commit) |
+| Per-prospect overlays | [`prospects/*.json`](prospects/) | GitHub web editor |
+| Marketing copy | [`src/app/page.tsx`](src/app/page.tsx) | GitHub web editor |
+| Pitch / ROI copy | [`src/app/pitch/page.tsx`](src/app/pitch/page.tsx) | GitHub web editor |
 
-| Area | Path |
-| ---- | ---- |
-| Prisma schema | [prisma/schema.prisma](prisma/schema.prisma) |
-| AI agents | [src/agents/](src/agents/) |
-| Review providers | [src/providers/](src/providers/) |
-| Worker entrypoint | [src/workers/index.ts](src/workers/index.ts) |
-| API routes | [src/app/api/](src/app/api/) |
-| Dashboard UI | [src/app/(dashboard)/](src/app/(dashboard)/) |
-| Auth + RBAC | [src/lib/auth/](src/lib/auth/), [src/server/rbac/](src/server/rbac/) |
+Vercel auto-deploys every push to `main` (~30 seconds).
 
-## Security highlights
+## How the demo persists state
 
-- Tenant isolation enforced both at the route guard (`requirePermission`)
-  and via a Prisma extension that injects `organizationId` into every
-  tenant-scoped query.
-- Third-party credentials encrypted at rest with AES-256-GCM
-  ([src/lib/crypto/index.ts](src/lib/crypto/index.ts)).
-- Argon2id password hashing.
-- Rate limiting via a Redis Lua sliding window ([src/lib/redis/rate-limit.ts](src/lib/redis/rate-limit.ts)).
-- Strict CSP-ready response headers in [next.config.ts](next.config.ts).
-- Pino logger with redaction of token/cookie/password fields.
-- Activity log for SOC2 audit (`ActivityLog` table).
+- **Approvals / rejections / regenerated drafts** are stored in a single
+  base64-JSON cookie named `a3_demo_state`. Survives cold starts; capped
+  at ~4 KB.
+- **Reset Demo button** (topbar) clears the cookie via `/api/demo/reset`.
+- **No database, no Redis** - safe to deploy to any Node host.
 
-## Status
+## Local dev
 
-This is a production-shaped scaffold: the agent graph, queues, schema, RBAC, and UI
-flows are real. Third-party provider credentials and outbound publish endpoints are
-shaped against the public API contracts but need live credentials and per-tenant
-OAuth setup before they can call production endpoints - see the per-provider TODOs
-in [src/providers/](src/providers/).
+```bash
+npm install
+npm run dev
+# http://localhost:3000
+```

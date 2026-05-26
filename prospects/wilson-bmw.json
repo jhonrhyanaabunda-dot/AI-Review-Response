@@ -1,0 +1,17 @@
+{
+  "slug": "wilson-bmw",
+  "orgName": "Wilson BMW Group",
+  "tagline": "Two BMW rooftops, one inbox.",
+  "dealerships": [
+    {
+      "name": "Wilson BMW of Bridgewater",
+      "brand": "BMW",
+      "signOff": "- The Wilson BMW Team"
+    },
+    {
+      "name": "Wilson BMW of Princeton",
+      "brand": "BMW",
+      "signOff": "- The Wilson BMW Team"
+    }
+  ]
+}

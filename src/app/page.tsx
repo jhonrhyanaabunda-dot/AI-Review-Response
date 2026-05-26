@@ -13,9 +13,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import type { ReviewPlatform } from "@prisma/client";
 
-export const dynamic = "force-dynamic";
-
-export default async function LandingPage() {
+// Marketing landing page is fully static - no dynamic auth or fetch.
+export default function LandingPage() {
   const platforms: ReviewPlatform[] = [
     "GOOGLE",
     "YELP",

@@ -1,13 +1,10 @@
+import { NextResponse } from "next/server";
 import { requirePermission } from "@/server/rbac/guard";
-import { handleApiError, ok } from "@/lib/utils/api";
+import { handleApiError } from "@/lib/utils/api";
 import { responseDecisionSchema } from "@/lib/validation";
 import { decide } from "@/server/services/responses";
+import { cookieSerialize } from "@/lib/demo/state-cookie";
 
-/**
- * One-click GM decision endpoint keyed by REVIEW id (not response id) so the
- * inbox row can post {decision: "APPROVED"} | {decision: "REJECTED"} without
- * needing to know the underlying response row id.
- */
 export async function POST(
   req: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -16,7 +13,7 @@ export async function POST(
     const ctx = await requirePermission("responses:approve");
     const { id } = await params;
     const body = responseDecisionSchema.parse(await req.json());
-    const result = await decide({
+    const { state, result } = await decide({
       organizationId: ctx.organizationId,
       reviewId: id,
       actorId: ctx.userId,
@@ -24,7 +21,13 @@ export async function POST(
       comment: body.comment,
       finalBody: body.finalBody,
     });
-    return ok(result);
+    return new NextResponse(JSON.stringify({ ok: true, data: result }), {
+      status: 200,
+      headers: {
+        "content-type": "application/json",
+        "set-cookie": cookieSerialize(state),
+      },
+    });
   } catch (err) {
     return handleApiError(err);
   }
